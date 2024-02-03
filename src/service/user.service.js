@@ -1,6 +1,6 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { loginUserValidation, registerUserValidation } from "../validation/user.validation.js";
+import { getUsersValidation, loginUserValidation, registerUserValidation } from "../validation/user.validation.js";
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -68,7 +68,37 @@ const login = async (data) => {
 
 }
 
+const getUsers = async (data) => {
+    const resultValidation = validate(getUsersValidation, data);
+
+    const users = await prismaClient.users.findMany({
+        where:{
+            OR: [
+                    { 
+                        fullName: resultValidation.fullName
+                    },
+                    { 
+                        userType: resultValidation.userType
+                    }
+                ]
+            },
+        select:{
+            username: true,
+            email: true,
+            fullName: true,
+            userType: true,
+        }
+        });
+
+    if(!users) throw new responseError(401, "FullName atau UserType tidak ditemukan!");
+
+    return {
+        ...users,
+    }
+}
+
 export default {
     register,
     login,
+    getUsers,
 }

@@ -14,7 +14,13 @@ const loginUserValidation = Joi.object({
     password: Joi.string().max(191).required(),
 })
     
+const getUsersValidation = Joi.object({
+    fullName: Joi.string().max(191).required(),
+    userType: Joi.string().valid('Admin','Officer','Finance','Customer_Admin','Customer_Service'),
+})
+
 export {
     registerUserValidation,
     loginUserValidation,
+    getUsersValidation,
 }
