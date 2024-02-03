@@ -37,9 +37,20 @@ const update = async (req,res,next) => {
     }
 }
 
+const detail = async (req,res,next) => {
+    const userIdTarget = Number(req.params.userId);
+    try {
+        const result = await userService.detail(userIdTarget);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
     register,
     login,
     list,
     update,
+    detail,
 }

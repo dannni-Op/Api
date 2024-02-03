@@ -130,9 +130,29 @@ const update = async (data, userIdTarget) => {
     return result;
 }
 
+const detail = async (userIdTarget) => {
+
+    const user = await prismaClient.users.findFirst({
+        where:{
+            userId: userIdTarget,
+        },
+        select: {
+            username: true,
+            email: true,
+            fullName: true,
+            userType: true,
+        }
+    });
+
+    if(!user) throw new responseError(404, "User tidak ditemukan!"); 
+
+    return user;
+}
+
 export default {
     register,
     login,
     list,
     update,
+    detail,
 }
