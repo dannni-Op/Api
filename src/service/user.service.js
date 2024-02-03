@@ -1,6 +1,6 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { getUsersValidation, loginUserValidation, registerUserValidation } from "../validation/user.validation.js";
+import { getUsersValidation, loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user.validation.js";
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -68,7 +68,7 @@ const login = async (data) => {
 
 }
 
-const getUsers = async (data) => {
+const list = async (data) => {
     const resultValidation = validate(getUsersValidation, data);
 
     const users = await prismaClient.users.findMany({
@@ -90,15 +90,49 @@ const getUsers = async (data) => {
         }
         });
 
-    if(!users) throw new responseError(401, "FullName atau UserType tidak ditemukan!");
+    if(users.length < 1) throw new responseError(404, "Users tidak ditemukan");
 
-    return {
-        ...users,
-    }
+    return users;
+}
+
+const update = async (data, userIdTarget) => {
+    const user = validate(updateUserValidation, data);
+
+    const countUser = await prismaClient.users.count({
+        where:{
+            userId: userIdTarget,
+        }
+    });
+
+    if(countUser !== 1) throw new responseError(404, "User tidak ditemukan!");
+
+    const newData = {};
+    if(user.username) newData.username = user.username; 
+    if(user.password) newData.password = user.password; 
+    if(user.email) newData.email = user.email; 
+    if(user.fullName) newData.fullName = user.fullName; 
+    if(user.userType) newData.userType = user.userType; 
+    if(user.companyId) newData.companyId = user.companyId; 
+
+    const result = await prismaClient.users.update({
+        where:{
+            userId: userIdTarget,
+        },
+        data: newData,
+        select: {
+            username: true,
+            email: true,
+            fullName: true,
+            userType: true,           
+        }
+    });
+
+    return result;
 }
 
 export default {
     register,
     login,
-    getUsers,
+    list,
+    update,
 }

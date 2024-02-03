@@ -27,8 +27,8 @@ model users {
   email String
   fullName String
   userType UserType
-  companies companies @relation(fields: [companyId], references: [companyId])
-  companyId Int
+  companies companies? @relation(fields: [companyId], references: [companyId])
+  companyId Int?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
