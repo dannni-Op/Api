@@ -20,7 +20,7 @@ const login = async (req,res,next) => {
 
 const list = async (req,res,next) => {
     try {
-        const result = await userService.list(req.body);
+        const result = await userService.list(req.user, req.body);
         res.status(200).json(result);
     } catch (error) {
         next(error)
@@ -28,9 +28,9 @@ const list = async (req,res,next) => {
 }
 
 const update = async (req,res,next) => {
-    const userIdTarget = Number(req.params.userId);
     try {
-        const result = await userService.update(req.body, userIdTarget);
+        const userIdTarget = Number(req.params.userId);
+        const result = await userService.update(req.user, req.body, userIdTarget);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -38,9 +38,9 @@ const update = async (req,res,next) => {
 }
 
 const detail = async (req,res,next) => {
-    const userIdTarget = Number(req.params.userId);
     try {
-        const result = await userService.detail(userIdTarget);
+        const userIdTarget = Number(req.params.userId);
+        const result = await userService.detail(req.user, userIdTarget);
         res.status(200).json(result);
     } catch (error) {
         next(error);

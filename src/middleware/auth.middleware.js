@@ -14,7 +14,9 @@ export const authMiddleware = async (req, res, next) => {
         })
     }
 
-    //result berisi data standart user login
-    
+    req.user = {
+        userId: result.userId,
+        userType: result.userType,
+    };
     next();
 }
