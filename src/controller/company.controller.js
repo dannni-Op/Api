@@ -1,11 +1,13 @@
 import companyService from "./../service/company.service.js";
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     try {
         const result = await companyService.register(req.user, req.body);
-        res.end();
+        res.status(200).json({
+            ...result,
+        });
     } catch (error) {
-        
+        next(error);
     }
 }
 
