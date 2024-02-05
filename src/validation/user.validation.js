@@ -5,8 +5,9 @@ const registerUserValidation = Joi.object({
     password: Joi.string().max(191).required(),
     email: Joi.string().max(191).required(),
     fullName: Joi.string().max(191).required(),
-    userType: Joi.string().valid('Admin','Officer','Finance','Customer_Admin','Customer_Service'),
+    userType: Joi.string().valid('Admin','Officer','Finance','Customer_Admin','Customer_Service').required(),
     companyId: Joi.number().optional(),
+    userPermission: Joi.string().valid('Inbound','Outbound','Stock Transfer','Order Management').optional(),
 })
 
 const loginUserValidation = Joi.object({

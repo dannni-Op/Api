@@ -26,16 +26,33 @@ const register = async (data) => {
     
     user.password = await bcrypt.hash(user.password, 10);
     const result = await prismaClient.users.create({
-        data: user,
+        data: {
+            username: user.username,
+            password: user.password,
+            email: user.email,
+            fullName: user.fullName,
+            userType: user.userType,
+            companyId: user.companyId,
+        },
         select:{
+            userId: true,
             username: true,
             email: true,
             fullName: true,
             userType: true,
         }
     });
-    
-    return result;
+
+    const resultPermission = await prismaClient.userPermissions.create({
+        data: {
+            userId: result.userId,
+            permissionType: user.userPermission,
+        }
+    })
+    return {
+        ...result,
+        PermissionType: resultPermission.permissionType,
+    };
 }
 
 const login = async (data) => {
