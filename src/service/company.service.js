@@ -2,7 +2,6 @@ import { companyIdValidation, registerCompanyValidation, updateCompanyValidation
 import { validate } from "../validation/validation.js"
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { logger } from "../app/logging.js";
 
 const register = async (userLogin, data) => {
     const resultValidation = validate(registerCompanyValidation, data);
@@ -85,7 +84,8 @@ const list = async (userIdLogin) => {
     return result;
 }
 
-const detail = async (userIdLogin, companyIdTarget) => {
+const detail = async (userLogin, companyIdTarget) => {
+
     const resultValidation = validate(companyIdValidation, { companyId: companyIdTarget})
     const result = await prismaClient.companies.findFirst({
         where: {

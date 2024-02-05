@@ -10,8 +10,8 @@ userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
 
 //user
-userRouter.post("/api/users", list);
 userRouter.patch("/api/users/:userId", update);
+userRouter.get("/api/users", list);
 userRouter.get("/api/users/:userId", detail);
 
 //company

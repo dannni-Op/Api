@@ -31,6 +31,7 @@ model users {
   companyId Int?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
+  userPermissions userPermissions[]
 }
 
 enum UserType {
@@ -39,4 +40,20 @@ enum UserType {
   Finance
   Customer_Admin
   Customer_Service
+}
+
+model userPermissions {
+  permissionId Int @id @default(autoincrement())
+  userId Int 
+  permissionType permissionType
+  users users @relation(fields: [userId], references: [userId])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
+}
+
+enum permissionType {
+  Inbound
+  Outbound
+  Stock_Transfer
+  Order_Management
 }
