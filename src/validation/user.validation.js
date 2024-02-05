@@ -25,6 +25,7 @@ const updateUserValidation = Joi.object({
     companyId: Joi.number().optional(),
 })
 
+
 export {
     registerUserValidation,
     loginUserValidation,
