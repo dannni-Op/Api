@@ -20,7 +20,7 @@ const login = async (req,res,next) => {
 
 const list = async (req,res,next) => {
     try {
-        const result = await userService.list(req.user, req.body);
+        const result = await userService.list(req.user);
         res.status(200).json(result);
     } catch (error) {
         next(error)

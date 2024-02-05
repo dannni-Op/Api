@@ -2,8 +2,8 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 
-const checkPermissionServerSide = async (data, action, target) => {
-    const usersExist = await prismaClient.users.findFirst({
+const checkPermission = async (data, permission = null) => {
+    const user = await prismaClient.users.findFirst({
         where: {
             
             AND: [
@@ -12,19 +12,31 @@ const checkPermissionServerSide = async (data, action, target) => {
                 },
                 {
                     userType: data.userType,
-                }
+                },
             ]
             
         },
+        select: {
+            userId:true,
+            username: true,
+            email: true,
+            fullName: true,
+            userType: true,
+            userPermissions: true,
+        }
     });
 
-    if(usersExist.userType !== "Admin" || usersExist.userType !== "Officer" || usersExist.userType !== "Financec"){
-        throw new responseError(401, "Akses ditolak");
-    }
-    
-    return true;
+    if(!user) throw new responseError(404, "User tidak ditemukan!");
+
+    if(
+        (user.userPermissions.permissionType === permission ) || 
+        (user.userPermissions[0].permissionType === null && user.userType === "Admin" || user.userType === "Officer" || user.userType === "Finance" || user.userType === "Owner")
+    ) {
+        return true;
+    };
+    return false;
 }
 
 export {
-    checkPermissionServerSide,
+    checkPermission,
 }

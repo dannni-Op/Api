@@ -39,8 +39,8 @@ enum UserType {
   Admin
   Officer
   Finance
-  Customer_Admin
-  Customer_Service
+  Customer_Admin @map("Customer Admin")
+  Customer_Service @map("Customer Service")
 }
 
 model userPermissions {
@@ -55,8 +55,8 @@ model userPermissions {
 enum permissionType {
   Inbound
   Outbound
-  Stock_Transfer
-  Order_Management
+  Stock_Transfer @map("Stock Transfer")
+  Order_Management @map("Order Management")
 }
 
 model roles {
@@ -72,8 +72,8 @@ enum roleName {
     Admin
     Officer
     Finance
-    Customer_Admin
-    Customer_Service
+    Customer_Admin @map("Customer Admin")
+    Customer_Service @map("Customer Service")
 }
 
 model userRoles {

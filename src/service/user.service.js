@@ -4,6 +4,7 @@ import { loginUserValidation, registerUserValidation, updateUserValidation } fro
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { checkPermission } from "./permission.service.js";
 
 const register = async (data) => {
     const user = validate(registerUserValidation, data);
@@ -101,8 +102,8 @@ const login = async (data) => {
 
 }
 
-const list = async (userLogin, data) => {
-    // const resultValidation = validate(getUsersValidation, data);
+const list = async (userLogin) => {
+
     const users = await prismaClient.users.findMany({
         select:{
             userId: true,
@@ -112,12 +113,14 @@ const list = async (userLogin, data) => {
         });
 
     if(users.length < 1) throw new responseError(404, "Users tidak ditemukan!");
-    // if(users.length < 1 && !resultValidation.keywoard) return await prismaClient.users.findMany();
 
     return users;
 }
 
 const update = async (userLogin, data, userIdTarget) => {
+    const resultPermission = await checkPermission(userLogin);
+    
+    if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
 
     const countUser = await prismaClient.users.count({

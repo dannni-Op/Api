@@ -2,7 +2,7 @@ import { companyIdValidation, registerCompanyValidation, updateCompanyValidation
 import { validate } from "../validation/validation.js"
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { checkPermissionServerSide } from "./permission.service.js";
+import { checkPermission } from "./permission.service.js";
 
 const register = async (userLogin, data) => {
     const resultValidation = validate(registerCompanyValidation, data);
@@ -86,9 +86,6 @@ const list = async (userIdLogin) => {
 }
 
 const detail = async (userLogin, companyIdTarget) => {
-
-    await checkPermission(userLogin, "list", "companies");
-    
     const resultValidation = validate(companyIdValidation, { companyId: companyIdTarget})
     const result = await prismaClient.companies.findFirst({
         where: {
