@@ -69,6 +69,7 @@ const login = async (data) => {
             fullName: true,
             userType: true,
             password: true,
+            userPermissions: true
         }
     });
     if(!user) throw new responseError(401, "Username atau Password salah");
@@ -82,6 +83,7 @@ const login = async (data) => {
         email:user.email,
         fullName:user.fullName,
         userType:user.userType,
+        userPermission: user.userPermissions[0].permissionType,
     },secretKey,{
         expiresIn: "3h",
     })
