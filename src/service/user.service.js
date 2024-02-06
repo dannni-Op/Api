@@ -150,7 +150,7 @@ const update = async (userLogin, data, userIdTarget) => {
 
         newData.username = user.username; 
     }
-    if(user.password) newData.password = user.password; 
+    if(user.password) newData.password = await bcrypt.hash(user.password, 10); 
     if(user.email) {
         const result = await prismaClient.users.count({
             where: {
@@ -175,6 +175,7 @@ const update = async (userLogin, data, userIdTarget) => {
     if(user.userType) newData.userType = user.userType; 
     if(user.companyId) newData.companyId = user.companyId; 
 
+    console.log(newData);
     const result = await prismaClient.users.update({
         where:{
             userId: userIdTarget,
@@ -184,7 +185,7 @@ const update = async (userLogin, data, userIdTarget) => {
             username: true,
             email: true,
             fullName: true,
-            userType: true,           
+            userType: true,
         }
     });
 
