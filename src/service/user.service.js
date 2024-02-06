@@ -22,7 +22,6 @@ const register = async (data) => {
         }
     });
 
-    if(countUser === 1) throw new responseError(400,"Username sudah ada!");
     if(countUserEmail === 1) throw new responseError(400,"Email sudah ada!");
     
     user.password = await bcrypt.hash(user.password, 10);
@@ -41,6 +40,7 @@ const register = async (data) => {
             email: true,
             fullName: true,
             userType: true,
+            companyId: true,
         }
     });
 
@@ -80,6 +80,7 @@ const login = async (data) => {
     const token = jwt.sign({
         userId: user.userId,
         username:user.username,
+        password: user.password,
         email:user.email,
         fullName:user.fullName,
         userType:user.userType,
@@ -104,10 +105,12 @@ const login = async (data) => {
 const list = async (userLogin) => {
 
     const users = await prismaClient.users.findMany({
-        select:{
-            userId: true,
+        select: {
+            username: true,
+            email: true,
             fullName: true,
             userType: true,
+            userPermissions: true,
         }
         });
 
@@ -202,6 +205,7 @@ const detail = async (userLogin, userIdTarget) => {
             email: true,
             fullName: true,
             userType: true,
+            userPermissions: true,
         }
     });
 

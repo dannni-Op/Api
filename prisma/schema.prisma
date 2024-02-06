@@ -85,3 +85,16 @@ model userRoles {
   createdAt   DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
+
+model warehouses {
+  id Int @id @default(autoincrement())
+  code String
+  name String 
+  address String
+  status status
+}
+
+enum status {
+  active
+  inactive
+}

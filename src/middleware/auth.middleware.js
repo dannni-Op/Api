@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
 export const authMiddleware = async (req, res, next) => {
 
@@ -14,14 +13,6 @@ export const authMiddleware = async (req, res, next) => {
             errors: "Unauthorized",
         })
     }
-
-
-    // if(req.body.password){
-    //     const result = await bcrypt.compare(req.body.password, result.password);
-    //     if(!result) return res.status(401).json({
-    //         errors: "Password tidak sama"
-    //     })
-    // }
 
     req.user = {
         userId: result.userId,
