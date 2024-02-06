@@ -77,7 +77,6 @@ const login = async (data) => {
     const isPasswordTrue = await bcrypt.compare(data.password, user.password);
     if(!isPasswordTrue) throw new responseError(401, "Password salah!");
 
-    const secretKey = "RAHASIA";
     const token = jwt.sign({
         userId: user.userId,
         username:user.username,
@@ -85,7 +84,7 @@ const login = async (data) => {
         fullName:user.fullName,
         userType:user.userType,
         userPermission: user.userPermissions[0].permissionType,
-    },secretKey,{
+    },process.env.ACCESS_TOKEN_SECRET,{
         expiresIn: "3h",
     })
 
@@ -118,9 +117,8 @@ const list = async (userLogin) => {
 }
 
 const update = async (userLogin, data, userIdTarget) => {
-    const resultPermission = await checkPermission(userLogin);
-    
-    if(!resultPermission) throw new responseError(401, "Akses ditolak");
+    // const resultPermission = await checkPermission(userLogin);
+    // if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
 
     const countUser = await prismaClient.users.count({

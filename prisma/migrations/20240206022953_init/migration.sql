@@ -16,7 +16,7 @@ CREATE TABLE `users` (
     `password` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `fullName` VARCHAR(191) NOT NULL,
-    `userType` ENUM('Admin', 'Officer', 'Finance', 'Customer Admin', 'Customer Service') NOT NULL,
+    `userType` ENUM('Admin', 'Officer', 'Finance', 'Customer_Admin', 'Customer_Service') NOT NULL,
     `companyId` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -28,7 +28,7 @@ CREATE TABLE `users` (
 CREATE TABLE `userPermissions` (
     `permissionId` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
-    `permissionType` ENUM('Inbound', 'Outbound', 'Stock Transfer', 'Order Management') NULL,
+    `permissionType` ENUM('Inbound', 'Outbound', 'Stock_Transfer', 'Order_Management') NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -38,7 +38,7 @@ CREATE TABLE `userPermissions` (
 -- CreateTable
 CREATE TABLE `roles` (
     `roleId` INTEGER NOT NULL AUTO_INCREMENT,
-    `roleName` ENUM('Owner', 'Admin', 'Officer', 'Finance', 'Customer Admin', 'Customer Service') NOT NULL,
+    `roleName` ENUM('Owner', 'Admin', 'Officer', 'Finance', 'Customer_Admin', 'Customer_Service') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 

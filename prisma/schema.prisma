@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:root@localhost:3306/user"
+  url      = env("DATABASE_URL")
 }
 
 
@@ -39,8 +39,8 @@ enum UserType {
   Admin
   Officer
   Finance
-  Customer_Admin @map("Customer Admin")
-  Customer_Service @map("Customer Service")
+  Customer_Admin 
+  Customer_Service 
 }
 
 model userPermissions {
@@ -55,8 +55,8 @@ model userPermissions {
 enum permissionType {
   Inbound
   Outbound
-  Stock_Transfer @map("Stock Transfer")
-  Order_Management @map("Order Management")
+  Stock_Transfer 
+  Order_Management 
 }
 
 model roles {
@@ -72,8 +72,8 @@ enum roleName {
     Admin
     Officer
     Finance
-    Customer_Admin @map("Customer Admin")
-    Customer_Service @map("Customer Service")
+    Customer_Admin 
+    Customer_Service 
 }
 
 model userRoles {

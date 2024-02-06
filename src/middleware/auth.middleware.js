@@ -7,7 +7,7 @@ export const authMiddleware = async (req, res, next) => {
     token = token.split(" ")[1];
     let result;
     try {
-        result = jwt.verify(token, "RAHASIA");
+        result = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     } catch (error) {
         return res.status(401).json({
             errors: "Unauthorized",
