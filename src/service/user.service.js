@@ -175,7 +175,6 @@ const update = async (userLogin, data, userIdTarget) => {
     if(user.userType) newData.userType = user.userType; 
     if(user.companyId) newData.companyId = user.companyId; 
 
-    console.log(newData);
     const result = await prismaClient.users.update({
         where:{
             userId: userIdTarget,
