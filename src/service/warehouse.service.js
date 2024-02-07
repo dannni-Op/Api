@@ -1,7 +1,7 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { validate } from "../validation/validation.js"
-import { registerWarehousevalidation, updateWarehousevalidation } from "../validation/warehouse.validation.js";
+import { registerWarehousevalidation, updateWarehousevalidation, warehouseIdValidation } from "../validation/warehouse.validation.js";
 
 const register = async (userLogin, data) => {
 
@@ -23,15 +23,18 @@ const register = async (userLogin, data) => {
 
     if(warehouse === 1) throw new responseError(401, "Warehouse sudah ada!");
 
+    
     const result = await prismaClient.warehouses.create({
-        data: resultValidation,
+        data: {
+            ...resultValidation,
+        },
     });
 
     return result;
 
 }
 
-const update = async (userLogin, warehouseIdTarget, data) => {
+const update = async (userLogin, data, warehouseIdTarget) => {
     const resultValidation = validate(updateWarehousevalidation, data);
     
     const isWarehouseExist = await prismaClient.warehouses.count({
@@ -81,7 +84,59 @@ const update = async (userLogin, warehouseIdTarget, data) => {
     
 }
 
+const list = async (userLogin) => {
+    const result = await prismaClient.warehouses.findMany();
+    if(result.length < 1) throw new responseError(404, "Warehouses Kosong");
+    return result;
+}
+
+const detail = async (userLogin, warehouseIdTarget) => {
+
+    const resultValidation = validate(warehouseIdValidation, { id: warehouseIdTarget });
+    const countWarehouse = await prismaClient.warehouses.count({
+        where: {
+            id: resultValidation.id,
+        }
+    });
+
+    const result = await prismaClient.warehouses.findFirst({
+        where: {
+            id: resultValidation.id,
+        }
+    });
+1
+    if(!countWarehouse) throw new responseError(404, "Warehouse tidak ditemukan!");
+    
+    return result;
+}
+
+const deleteWarehouse = async (userLogin, warehouseIdTarget) => {
+
+    const resultValidation = validate(warehouseIdValidation, { id:warehouseIdTarget });
+    
+    const countWarehouse = await prismaClient.warehouses.count({
+        where: {
+            id: resultValidation.id,
+        }
+    });
+
+    if(!countWarehouse) throw new responseError(404, "Warehouse tidak ditemukan!");
+
+    const result = await prismaClient.warehouses.delete({
+        where: {
+            id: resultValidation.id,
+        }
+    });
+
+    return {
+        message: "Deleted Success",
+    }
+}
+
 export default {
     register,
     update,
+    list,
+    detail,
+    deleteWarehouse,
 }

@@ -5,6 +5,7 @@ import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { checkPermission } from "./permission.service.js";
+import { getUTCTime } from "./time.service.js";
 
 const register = async (data) => {
     const user = validate(registerUserValidation, data);
@@ -23,7 +24,7 @@ const register = async (data) => {
     });
 
     if(countUserEmail === 1) throw new responseError(400,"Email sudah ada!");
-    
+
     user.password = await bcrypt.hash(user.password, 10);
     const result = await prismaClient.users.create({
         data: {
@@ -33,6 +34,8 @@ const register = async (data) => {
             fullName: user.fullName,
             userType: user.userType,
             companyId: user.companyId,
+            createdAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(new Date().toISOString()),
         },
         select:{
             userId: true,
@@ -41,15 +44,17 @@ const register = async (data) => {
             fullName: true,
             userType: true,
             companyId: true,
+            createdAt: true,
         }
     });
 
     const resultPermission = await prismaClient.userPermissions.create({
         data: {
             userId: result.userId,
-            permissionType: user.userPermission,
+            permissionType: user.permissionType,
         }
-    })
+    });
+
     return {
         ...result,
         PermissionType: resultPermission.permissionType,
@@ -70,7 +75,8 @@ const login = async (data) => {
             fullName: true,
             userType: true,
             password: true,
-            userPermissions: true
+            userPermissions: true,
+            createdAt: true,
         }
     });
     if(!user) throw new responseError(401, "Username atau Password salah");
@@ -96,6 +102,8 @@ const login = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
+            permissionType: user.userPermissions[0].permissionType,
+            createdAt: user.createdAt,
         },
         token,
     };
@@ -114,7 +122,7 @@ const list = async (userLogin) => {
         }
         });
 
-    if(users.length < 1) throw new responseError(404, "Users tidak ditemukan!");
+    if(users.length < 1) throw new responseError(404, "Users Kosong!");
 
     return users;
 }
@@ -182,16 +190,53 @@ const update = async (userLogin, data, userIdTarget) => {
         where:{
             userId: userIdTarget,
         },
-        data: newData,
+        data: {
+            ...newData,
+            updatedAt: getUTCTime(new Date().toISOString()),
+        },
         select: {
+            userId: true,
             username: true,
             email: true,
             fullName: true,
             userType: true,
+            updatedAt: true,
+            userPermissions: true,
         }
     });
 
-    return result;
+    let userPermissions = {};
+    if(user.permissionType){
+        const permissionExist = await prismaClient.userPermissions.findFirst({
+            where: {
+                userId: result.userId,
+            }
+        });
+
+        const updateResult = await prismaClient.userPermissions.update({
+            where : {
+                permissionId: permissionExist.permissionId,
+            },
+            data: {
+                permissionType: user.permissionType,
+                updatedAt: getUTCTime(new Date().toISOString()),
+            }
+        })
+
+        userPermissions.permissionType = updateResult.permissionType;
+    }else{
+        userPermissions.permissionType = result.userPermissions[0].permissionType;
+    }
+
+    return {
+        userId: result.userId,
+        username: result.username,
+        email: result.email,
+        fullName: result.fullName,
+        userType: result.userType,
+        updatedAt: result.updatedAt,
+        permissionType: userPermissions.permissionType,
+    };
 }
 
 const detail = async (userLogin, userIdTarget) => {

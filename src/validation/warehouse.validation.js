@@ -15,7 +15,12 @@ const updateWarehousevalidation = Joi.object({
     status: Joi.string().valid("active","inactive").optional(),
 })
 
+const warehouseIdValidation = Joi.object({
+    id: Joi.number().positive().required(),
+})
+
 export {
     registerWarehousevalidation,
     updateWarehousevalidation,
+    warehouseIdValidation,
 }

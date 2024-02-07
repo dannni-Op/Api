@@ -19,13 +19,17 @@ userRouter.get("/api/users/:userId", detail);
 
 //company
 companyRouter.post("/api/companies/register", companyRegister);
-companyRouter.patch("/api/companies/update/:companyId", companyUpdate);
+companyRouter.patch("/api/companies/:companyId", companyUpdate);
 companyRouter.get("/api/companies", companyList);
 companyRouter.get("/api/companies/:companyId", companyDetail);
 
 //warehouse
 warehouseRouter.post("/api/warehouses/register", warehouseController.register);
 warehouseRouter.patch("/api/warehouses/:warehouseId", warehouseController.update);
+warehouseRouter.get("/api/warehouses", warehouseController.list);
+warehouseRouter.get("/api/warehouses/:warehouseId", warehouseController.detail);
+warehouseRouter.delete("/api/warehouses/:warehouseId", warehouseController.deleteWarehouse);
+
 
 export {
     userRouter,
