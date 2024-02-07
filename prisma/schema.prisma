@@ -14,7 +14,7 @@ datasource db {
 model companies {
   companyId Int @id @default(autoincrement())
   companyName String
-  companyCode Int
+  companyCode String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   users users[]

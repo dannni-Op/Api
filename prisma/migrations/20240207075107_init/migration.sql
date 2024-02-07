@@ -2,7 +2,7 @@
 CREATE TABLE `companies` (
     `companyId` INTEGER NOT NULL AUTO_INCREMENT,
     `companyName` VARCHAR(191) NOT NULL,
-    `companyCode` INTEGER NOT NULL,
+    `companyCode` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 

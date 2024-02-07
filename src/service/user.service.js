@@ -75,8 +75,9 @@ const login = async (data) => {
             fullName: true,
             userType: true,
             password: true,
-            userPermissions: true,
+            companyId: true,
             createdAt: true,
+            userPermissions: true,
         }
     });
     if(!user) throw new responseError(401, "Username atau Password salah");
@@ -102,6 +103,7 @@ const login = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
+            companyId: user.companyId,
             permissionType: user.userPermissions[0].permissionType,
             createdAt: user.createdAt,
         },
@@ -114,10 +116,12 @@ const list = async (userLogin) => {
 
     const users = await prismaClient.users.findMany({
         select: {
+            userId: true,
             username: true,
             email: true,
             fullName: true,
             userType: true,
+            companyId: true,
             userPermissions: true,
         }
         });
@@ -200,6 +204,7 @@ const update = async (userLogin, data, userIdTarget) => {
             email: true,
             fullName: true,
             userType: true,
+            companyId: true,
             updatedAt: true,
             userPermissions: true,
         }
@@ -234,6 +239,7 @@ const update = async (userLogin, data, userIdTarget) => {
         email: result.email,
         fullName: result.fullName,
         userType: result.userType,
+        companyId: result.companyId,
         updatedAt: result.updatedAt,
         permissionType: userPermissions.permissionType,
     };
@@ -246,10 +252,12 @@ const detail = async (userLogin, userIdTarget) => {
             userId: userIdTarget,
         },
         select: {
+            userId: true,
             username: true,
             email: true,
             fullName: true,
             userType: true,
+            companyId: true,
             userPermissions: true,
         }
     });
