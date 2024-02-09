@@ -32,6 +32,7 @@ CREATE TABLE `userPermissions` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `userPermissions_userId_key`(`userId`),
     PRIMARY KEY (`permissionId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -47,13 +48,14 @@ CREATE TABLE `roles` (
 
 -- CreateTable
 CREATE TABLE `userRoles` (
-    `userRoles` INTEGER NOT NULL AUTO_INCREMENT,
+    `userRolesId` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
     `roleId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`userRoles`)
+    UNIQUE INDEX `userRoles_userId_key`(`userId`),
+    PRIMARY KEY (`userRolesId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

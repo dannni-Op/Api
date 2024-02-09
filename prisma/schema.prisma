@@ -45,7 +45,7 @@ enum UserType {
 
 model userPermissions {
   permissionId Int @id @default(autoincrement())
-  userId Int 
+  userId Int @unique
   permissionType permissionType?
   users users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   createdAt  DateTime   @default(now())
@@ -77,9 +77,9 @@ enum roleName {
 }
 
 model userRoles {
-  userRoles Int @id @default(autoincrement())
-  userId Int
-  roleId Int
+  userRolesId Int @id @default(autoincrement())
+  userId Int @unique
+  roleId Int 
   users users @relation(fields: [userId], references: [userId])
   roles roles @relation(fields: [roleId], references: [roleId])
   createdAt   DateTime   @default(now())

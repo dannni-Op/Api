@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
+import { permissionType, roleName } from "@prisma/client";
 
 const register = async (data) => {
     const user = validate(registerUserValidation, data);
@@ -47,6 +48,32 @@ const register = async (data) => {
             createdAt: true,
         }
     });
+    
+    let resultRole = await prismaClient.roles.findFirst({
+        where: {
+            roleName: user.roleName,
+        }
+    })
+    
+    
+    if(!resultRole){
+        resultRole = await prismaClient.roles.create({
+            data: {
+                roleName: user.roleName,
+                createdAt: getUTCTime(new Date().toISOString()),
+                updatedAt: getUTCTime(new Date().toISOString()),
+            }
+        })
+    }
+
+    const userRole = await prismaClient.userRoles.create({
+        data: {
+            userId: result.userId,
+            roleId: resultRole.roleId,
+            createdAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(new Date().toISOString()),
+        }
+    })
 
     const resultPermission = await prismaClient.userPermissions.create({
         data: {
@@ -57,7 +84,8 @@ const register = async (data) => {
 
     return {
         ...result,
-        PermissionType: resultPermission.permissionType,
+        permissionType: resultPermission.permissionType,
+        roleName: resultRole.roleName,
     };
 }
 
@@ -78,11 +106,18 @@ const login = async (data) => {
             companyId: true,
             createdAt: true,
             userPermissions: true,
+            userRoles: true,
         }
     });
     if(!user) throw new responseError(401, "Username atau Password salah");
     const isPasswordTrue = await bcrypt.compare(data.password, user.password);
     if(!isPasswordTrue) throw new responseError(401, "Password salah!");
+
+    const roles = await prismaClient.roles.findFirst({
+        where: {
+            roleId: user.userRoles[0].roleId,
+        }
+    })
 
     const token = jwt.sign({
         userId: user.userId,
@@ -91,7 +126,8 @@ const login = async (data) => {
         email:user.email,
         fullName:user.fullName,
         userType:user.userType,
-        userPermission: user.userPermissions[0].permissionType,
+        permissionType: user.userPermissions[0].permissionType,
+        roleName: roles.roleName,
     },process.env.ACCESS_TOKEN_SECRET,{
         expiresIn: "3h",
     })
@@ -105,6 +141,7 @@ const login = async (data) => {
             userType: user.userType,
             companyId: user.companyId,
             permissionType: user.userPermissions[0].permissionType,
+            roleName: roles.roleName,
             createdAt: user.createdAt,
         },
         token,
@@ -122,7 +159,8 @@ const list = async (userLogin) => {
             fullName: true,
             userType: true,
             companyId: true,
-            userPermissions: true,
+            createdAt: true,
+            updatedAt: true,
         }
         });
 
@@ -233,6 +271,56 @@ const update = async (userLogin, data, userIdTarget) => {
         userPermissions.permissionType = result.userPermissions[0].permissionType;
     }
 
+
+    let roles;
+    if(user.roleName){
+        roles = await prismaClient.roles.findFirst({
+            where: {
+                roleName: user.roleName,
+            }
+        })
+
+        if(!roles){
+            roles = await prismaClient.roles.create({
+                data: {
+                    roleName: user.roleName,
+                    createdAt: getUTCTime(new Date().toISOString()),
+                    updatedAt: getUTCTime(new Date().toISOString()),
+                }
+            })
+        }
+
+        const roleId = roles.roleId;
+
+        const userRoles = await prismaClient.userRoles.update({
+            where: {
+                userId: result.userId,
+            },
+            data: {
+                roleId,
+            }
+        })
+
+        roles = await prismaClient.roles.findFirst({
+            where: {
+                roleId: userRoles.roleId,
+            }
+        })
+
+    }else{
+        let userRoles = await prismaClient.userRoles.findFirst({
+            where: {
+                userId: result.userId,
+            }
+        });
+
+        roles = await prismaClient.roles.findFirst({
+            where: {
+                roleId: userRoles.roleId,
+            }
+        })
+    }
+
     return {
         userId: result.userId,
         username: result.username,
@@ -242,6 +330,7 @@ const update = async (userLogin, data, userIdTarget) => {
         companyId: result.companyId,
         updatedAt: result.updatedAt,
         permissionType: userPermissions.permissionType,
+        roleName: roles.roleName,
     };
 }
 
@@ -259,12 +348,32 @@ const detail = async (userLogin, userIdTarget) => {
             userType: true,
             companyId: true,
             userPermissions: true,
+            userRoles: true,
+            createdAt: true,
+            updatedAt: true,
         }
     });
 
     if(!user) throw new responseError(404, "User tidak ditemukan!"); 
 
-    return user;
+    const roles = await prismaClient.roles.findFirst({
+        where: {
+            roleId: user.userRoles[0].roleId,
+        }
+    })
+
+    return {
+        userId: user.userId,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName,
+        userType: user.userType,
+        companyId: user.companyId,
+        permissionType: user.userPermissions[0].permissionType,
+        roleName: roles.roleName,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    };
 }
 
 export default {
