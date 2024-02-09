@@ -26,6 +26,8 @@ export const authMiddleware = async (req, res, next) => {
         }
     })
 
+    if(!user) return res.status(401).json({ errors: "Unauthorized" })
+    
     req.user = {
         userId: result.userId,
         companyId: user.companyId,

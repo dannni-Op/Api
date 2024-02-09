@@ -35,6 +35,7 @@ model users {
 }
 
 enum UserType {
+  Owner
   Admin
   Officer
   Finance

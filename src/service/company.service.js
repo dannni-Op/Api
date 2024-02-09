@@ -79,7 +79,10 @@ const list = async (userIdLogin) => {
     const result = await prismaClient.companies.findMany({
         select: {
             companyId: true,
+            companyCode: true,
             companyName: true,
+            createdAt: true,
+            updatedAt: true,
         }
     });
     if(result.length < 1) throw new responseError(404, "Companies Kosong!");

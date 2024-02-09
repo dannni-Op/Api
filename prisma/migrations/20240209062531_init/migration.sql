@@ -16,7 +16,7 @@ CREATE TABLE `users` (
     `password` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `fullName` VARCHAR(191) NOT NULL,
-    `userType` ENUM('Admin', 'Officer', 'Finance', 'Customer_Admin', 'Customer_Service') NOT NULL,
+    `userType` ENUM('Owner', 'Admin', 'Officer', 'Finance', 'Customer_Admin', 'Customer_Service') NOT NULL,
     `companyId` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
