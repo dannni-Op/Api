@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { prismaClient } from "../app/db.js";
 
 export const authMiddleware = async (req, res, next) => {
 
@@ -14,10 +15,22 @@ export const authMiddleware = async (req, res, next) => {
         })
     }
 
+    const user = await prismaClient.users.findFirst({
+        where: {
+            userId: result.userId,
+        },
+        select: {
+            companyId: true,
+            userType: true,
+            userPermissions: true,
+        }
+    })
+
     req.user = {
         userId: result.userId,
-        userType: result.userType,
-        userPermission: result.userPermission,
+        companyId: user.companyId,
+        userType: user.userType,
+        permissionType: user.userPermissions[0].permissionType,
     };
     next();
 }

@@ -32,7 +32,6 @@ model users {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   userPermissions userPermissions[]
-  userRoles userRoles[]
 }
 
 enum UserType {
@@ -57,33 +56,6 @@ enum permissionType {
   Outbound
   Stock_Transfer 
   Order_Management 
-}
-
-model roles {
-  roleId Int @id @default(autoincrement())
-  roleName roleName
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @default(now())
-  userRoles userRoles[]
-}
-
-enum roleName {
-    Owner
-    Admin
-    Officer
-    Finance
-    Customer_Admin 
-    Customer_Service 
-}
-
-model userRoles {
-  userRolesId Int @id @default(autoincrement())
-  userId Int @unique
-  roleId Int 
-  users users @relation(fields: [userId], references: [userId])
-  roles roles @relation(fields: [roleId], references: [roleId])
-  createdAt   DateTime   @default(now())
-  updatedAt  DateTime   @default(now())
 }
 
 model warehouses {
