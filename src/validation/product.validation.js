@@ -23,7 +23,7 @@ const detailProductValidation = Joi.object({
 });
 
 const listProductValidation = Joi.object({
-    warehouseCode: Joi.string().max(191).required()
+    warehouseCode: Joi.string().max(191).optional(),
 })
 
 export {

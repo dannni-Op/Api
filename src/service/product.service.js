@@ -85,6 +85,8 @@ const update = async (userLogin, data) => {
 const list = async (userLogin, data) => {
     const validationResult = validate(listProductValidation, data);
 
+    if(!validationResult.warehouseCode) return await prismaClient.products.findMany();
+
     const isWarehouseExist = await prismaClient.warehouses.findFirst({
         where: {
             code: validationResult.warehouseCode,
