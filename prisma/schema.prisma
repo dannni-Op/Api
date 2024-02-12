@@ -60,14 +60,22 @@ enum permissionType {
 }
 
 model warehouses {
-  id Int @id @default(autoincrement())
-  code String
+  code String @id
   name String 
   address String
   status status
+  products products[]
 }
 
 enum status {
   active
   inactive
+}
+
+model products {
+  sku String @id
+  name String
+  unit Int
+  warehouseCode String?
+  warehouses warehouses? @relation(fields: [warehouseCode], references: [code], onDelete: SetNull)
 }
