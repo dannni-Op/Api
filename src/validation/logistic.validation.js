@@ -6,7 +6,7 @@ const registerLogisticValidation = Joi.object({
     service: Joi.string().max(191).required(),
 });
 
-const logictisCodeValidation = Joi.ValidationError.object({
+const logictisCodeValidation = Joi.object({
     logisticCode: Joi.string().max(191).required(),
 })
 
