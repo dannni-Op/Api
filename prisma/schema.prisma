@@ -21,7 +21,7 @@ model companies {
 }
 
 model users {
-  userId Int @id @default(autoincrement())
+  userId String @id 
   username String
   password String
   email String
@@ -45,7 +45,7 @@ enum UserType {
 
 model userPermissions {
   permissionId Int @id @default(autoincrement())
-  userId Int @unique
+  userId String @unique
   permissionType permissionType?
   users users @relation(fields: [userId], references: [userId], onDelete: Cascade)
   createdAt  DateTime   @default(now())

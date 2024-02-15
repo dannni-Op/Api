@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
+import { getId } from "./genereateId.service.js";
 
 const register = async (data) => {
     const user = validate(registerUserValidation, data);
@@ -26,8 +27,11 @@ const register = async (data) => {
     if(countUserEmail === 1) throw new responseError(400,"Email sudah ada!");
 
     user.password = await bcrypt.hash(user.password, 10);
+
+    const uuid = getId();
     const result = await prismaClient.users.create({
         data: {
+            userId: uuid,
             username: user.username,
             password: user.password,
             email: user.email,
@@ -86,7 +90,7 @@ const login = async (data) => {
     if(!isPasswordTrue) throw new responseError(401, "Password salah!");
 
     const token = jwt.sign({
-        userId: user.userId,
+        key: user.userId,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     },process.env.ACCESS_TOKEN_SECRET,{
