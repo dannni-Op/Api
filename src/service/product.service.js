@@ -93,7 +93,7 @@ const list = async (userLogin, data) => {
 
     const isCompanyExist = await prismaClient.companies.findFirst({
         where: {
-            companyCode: validationResult.companyCode,
+            code: validationResult.companyCode,
         }
     })
 
