@@ -4,7 +4,7 @@ import {register as warehouseRegister, update as warehouseUpdate, list as wareho
 import express from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import {register as productRegister, update as productUpdate, list as productList, detail as productDetail, deleteProduct as productDelete } from "../controller/product.controller.js";
-import { register as logisticRegistert } from "../controller/logistic.controller.js";
+import { register as logisticRegistert, list as logisticList } from "../controller/logistic.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
@@ -47,6 +47,7 @@ productRouter.delete("/api/products", productDelete);
 
 //Logistic
 logisticRouter.post("/api/logistics/register", logisticRegistert);
+logisticRouter.get("/api/logistics", logisticList);
 
 export {
     userRouter,

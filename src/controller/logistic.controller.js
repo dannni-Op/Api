@@ -9,6 +9,16 @@ const register = async (req, res, next) => {
     }
 }
 
+const list = async (req, res, next) => {
+    try {
+        const result = await logisticService.list(req.user);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
-    register
+    register,
+    list,
 }

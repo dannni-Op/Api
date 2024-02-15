@@ -30,6 +30,13 @@ const register = async (userLogin, data) => {
     return result;
 }
 
+const list = async (userLogin) => {
+    const result = await prismaClient.logistics.findMany();
+    if(result.length < 1) throw new responseError(404, "List Logistics kosong!");
+    return result;
+}
+
 export default {
     register,
+    list,
 }
