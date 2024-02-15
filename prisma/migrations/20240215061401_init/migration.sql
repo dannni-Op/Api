@@ -6,6 +6,7 @@ CREATE TABLE `companies` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `companies_companyCode_key`(`companyCode`),
     PRIMARY KEY (`companyId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -50,8 +51,8 @@ CREATE TABLE `warehouses` (
 CREATE TABLE `products` (
     `sku` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `unit` INTEGER NOT NULL,
-    `warehouseCode` VARCHAR(191) NULL,
+    `unit` VARCHAR(191) NOT NULL,
+    `companyCode` VARCHAR(191) NULL,
 
     PRIMARY KEY (`sku`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -63,4 +64,4 @@ ALTER TABLE `users` ADD CONSTRAINT `users_companyId_fkey` FOREIGN KEY (`companyI
 ALTER TABLE `userPermissions` ADD CONSTRAINT `userPermissions_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `products` ADD CONSTRAINT `products_warehouseCode_fkey` FOREIGN KEY (`warehouseCode`) REFERENCES `warehouses`(`code`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `products` ADD CONSTRAINT `products_companyCode_fkey` FOREIGN KEY (`companyCode`) REFERENCES `companies`(`companyCode`) ON DELETE SET NULL ON UPDATE CASCADE;

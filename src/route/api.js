@@ -1,4 +1,4 @@
-import {detail, list, update} from "../controller/user.constroller.js";
+import {detail, list, update, deleteUser as userDelete } from "../controller/user.constroller.js";
 import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail, deleteCompany as companyDelete} from "../controller/company.controller.js";
 import {register as warehouseRegister, update as warehouseUpdate, list as warehouseList, detail as warehouseDetail, deleteWarehouse as warehouseDelete} from "../controller/warehouse.controller.js";
 import express from "express";
@@ -19,6 +19,7 @@ productRouter.use(authMiddleware);
 userRouter.patch("/api/users", update);
 userRouter.get("/api/users", list);
 userRouter.get("/api/users/:userId", detail);
+userRouter.delete("/api/users", userDelete);
 
 //company
 companyRouter.post("/api/companies/register", companyRegister);

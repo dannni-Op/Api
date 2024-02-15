@@ -3,15 +3,15 @@ import Joi from "joi";
 const registerProductValidation = Joi.object({
     sku: Joi.string().max(191).required(),
     name: Joi.string().max(191).required(),
-    unit: Joi.number().positive().required(),
-    warehouseCode: Joi.string().max(191).required(),
+    unit: Joi.string().max(191).required(),
+    companyCode: Joi.string().max(191).required(),
 });
 
 const updateProductValidation = Joi.object({
     sku: Joi.string().max(191).required(),
     name: Joi.string().max(191).optional(),
-    unit: Joi.number().positive().optional(),
-    warehouseCode: Joi.string().max(191).optional(),
+    unit: Joi.string().max(191).optional(),
+    companyCode: Joi.string().max(191).optional(),
 });
 
 const deleteProductValidation = Joi.object({
@@ -23,7 +23,7 @@ const detailProductValidation = Joi.object({
 });
 
 const listProductValidation = Joi.object({
-    warehouseCode: Joi.string().max(191).optional(),
+    companyCode: Joi.string().max(191).optional(),
 })
 
 export {

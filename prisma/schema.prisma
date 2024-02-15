@@ -14,10 +14,11 @@ datasource db {
 model companies {
   companyId String @id
   companyName String
-  companyCode String
+  companyCode String @unique
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   users users[]
+  products products[]
 }
 
 model users {
@@ -64,7 +65,6 @@ model warehouses {
   name String 
   address String
   status status
-  products products[]
 }
 
 enum status {
@@ -75,7 +75,7 @@ enum status {
 model products {
   sku String @id
   name String
-  unit Int
-  warehouseCode String?
-  warehouses warehouses? @relation(fields: [warehouseCode], references: [code], onDelete: SetNull)
+  unit String
+  companyCode String?
+  companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: SetNull)
 }

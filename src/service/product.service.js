@@ -30,7 +30,7 @@ const register = async (userLogin, data) => {
             sku: validationResult.sku,
             name: validationResult.name,
             unit: validationResult.unit,
-            warehouseCode: validationResult.warehouseCode
+            companyCode: validationResult.companyCode
         },
     })
     
@@ -70,7 +70,7 @@ const update = async (userLogin, data) => {
     }
 
     if(validationResult.unit) newData.unit = validationResult.unit;
-    if(validationResult.warehouseCode) newData.warehouseCode = validationResult.warehouseCode;
+    if(validationResult.companyCode) newData.companyCode = validationResult.companyCode;
 
     const product = await prismaClient.products.update({
         where: {
@@ -85,23 +85,23 @@ const update = async (userLogin, data) => {
 const list = async (userLogin, data) => {
     const validationResult = validate(listProductValidation, data);
 
-    if(!validationResult.warehouseCode) {
+    if(!validationResult.companyCode) {
         const result = await prismaClient.products.findMany();
         if(result.length < 1) throw new responseError(404, "Products kosong!");
         return result;
     }
 
-    const isWarehouseExist = await prismaClient.warehouses.findFirst({
+    const isCompanyExist = await prismaClient.companies.findFirst({
         where: {
-            code: validationResult.warehouseCode,
+            companyCode: validationResult.companyCode,
         }
     })
 
-    if(!isWarehouseExist) throw new responseError(404, "Warehouse tidak ditemukan!");
+    if(!isCompanyExist) throw new responseError(404, "Company tidak ditemukan!");
     
     const result = await prismaClient.products.findMany({
         where:{
-            warehouseCode: validationResult.warehouseCode,
+            companyCode: validationResult.companyCode,
         }
     });
     if(result.length < 1) throw new responseError(404, "Products kosong!");

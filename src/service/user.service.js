@@ -1,6 +1,6 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user.validation.js";
+import { idUserValidation, loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user.validation.js";
 import { validate } from "../validation/validation.js"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -285,10 +285,33 @@ const detail = async (userLogin, userIdTarget) => {
     };
 }
 
+const deleteUser = async (userLogin, data) => {
+    const validationResult = validate(idUserValidation, data);
+
+    const isUserExist = await prismaClient.users.count({
+        where: {
+            userId: validationResult.userId,
+        }
+    });
+
+    if(isUserExist === 0) throw new responseError(404, "User tidak ditemukan!");
+
+    const result = await prismaClient.users.delete({
+        where: {
+            userId: validationResult.userId,
+        }
+    })
+
+    return {
+        message: "Deleted Success",
+    }
+}
+
 export default {
     register,
     login,
     list,
     update,
     detail,
+    deleteUser,
 }
