@@ -36,7 +36,22 @@ const list = async (userLogin) => {
     return result;
 }
 
+const detail = async (userLogin, idk) => {
+
+}
+
+const update = async (userLogin, data) => {
+
+}
+
+const deleteLogistic = async (userLogin, data) => {
+
+}
+
 export default {
     register,
     list,
+    detail,
+    update,
+    deleteLogistic,
 }
