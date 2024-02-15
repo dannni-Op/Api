@@ -6,6 +6,7 @@ const registerCompanyValidation = Joi.object({
 });
 
 const updateCompanyValidation = Joi.object({
+    companyId: Joi.string().max(191).required(),
     companyName: Joi.string().max(191).optional(),
     companyCode: Joi.string().max(191).optional(),
 })

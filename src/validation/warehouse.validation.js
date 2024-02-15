@@ -9,18 +9,18 @@ const registerWarehousevalidation = Joi.object({
 
 
 const updateWarehousevalidation = Joi.object({
-    code: Joi.string().max(191).optional(),
+    code: Joi.string().max(191).required(),
     name: Joi.string().max(191).optional(),
     address: Joi.string().max(191).optional(),
     status: Joi.string().valid("active","inactive").optional(),
 })
 
-const warehouseIdValidation = Joi.object({
-    id: Joi.number().positive().required(),
+const warehouseCodeValidation = Joi.object({
+    code: Joi.string().max(191).required(),
 })
 
 export {
     registerWarehousevalidation,
     updateWarehousevalidation,
-    warehouseIdValidation,
+    warehouseCodeValidation,
 }

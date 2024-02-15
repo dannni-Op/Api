@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `companies` (
-    `companyId` INTEGER NOT NULL AUTO_INCREMENT,
+    `companyId` VARCHAR(191) NOT NULL,
     `companyName` VARCHAR(191) NOT NULL,
     `companyCode` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -17,7 +17,7 @@ CREATE TABLE `users` (
     `email` VARCHAR(191) NOT NULL,
     `fullName` VARCHAR(191) NOT NULL,
     `userType` ENUM('Owner', 'Admin', 'Officer', 'Finance', 'Customer_Admin', 'Customer_Service') NOT NULL,
-    `companyId` INTEGER NULL,
+    `companyId` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -26,7 +26,7 @@ CREATE TABLE `users` (
 
 -- CreateTable
 CREATE TABLE `userPermissions` (
-    `permissionId` INTEGER NOT NULL AUTO_INCREMENT,
+    `permissionId` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `permissionType` ENUM('Inbound', 'Outbound', 'Stock_Transfer', 'Order_Management') NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

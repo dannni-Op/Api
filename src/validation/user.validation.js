@@ -18,6 +18,7 @@ const loginUserValidation = Joi.object({
 const getUsersValidation = Joi.object({})
 
 const updateUserValidation = Joi.object({
+    userId: Joi.string().max(191).required(),
     username: Joi.string().max(191).optional(),
     password: Joi.string().max(191).optional(),
     email: Joi.string().max(191).optional(),

@@ -16,22 +16,22 @@ warehouseRouter.use(authMiddleware);
 productRouter.use(authMiddleware);
 
 //user
-userRouter.patch("/api/users/:userId", update);
+userRouter.patch("/api/users", update);
 userRouter.get("/api/users", list);
 userRouter.get("/api/users/:userId", detail);
 
 //company
 companyRouter.post("/api/companies/register", companyRegister);
-companyRouter.patch("/api/companies/:companyId", companyUpdate);
+companyRouter.patch("/api/companies", companyUpdate);
 companyRouter.get("/api/companies", companyList);
 companyRouter.get("/api/companies/:companyId", companyDetail);
 
 //warehouse
 warehouseRouter.post("/api/warehouses/register", warehouseRegister);
-warehouseRouter.patch("/api/warehouses/:warehouseId", warehouseUpdate);
+warehouseRouter.patch("/api/warehouses", warehouseUpdate);
 warehouseRouter.get("/api/warehouses", warehouseList);
 warehouseRouter.get("/api/warehouses/:warehouseId", warehouseDetail);
-warehouseRouter.delete("/api/warehouses/:warehouseId", warehouseDelete);
+warehouseRouter.delete("/api/warehouses", warehouseDelete);
 
 //product
 productRouter.post("/api/products/register", productRegister);

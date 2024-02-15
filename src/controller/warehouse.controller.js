@@ -11,8 +11,7 @@ const register = async (req,res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const warehouseIdTarget = Number(req.params.warehouseId)
-        const result = await warehouseService.update(req.user, req.body, warehouseIdTarget);
+        const result = await warehouseService.update(req.user, req.body);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -30,7 +29,7 @@ const list = async (req, res, next) => {
 
 const detail = async(req, res, next) => {
     try {
-        const warehouseIdTarget = Number(req.params.warehouseId);
+        const warehouseIdTarget = req.params.warehouseId;
         const result = await warehouseService.detail(req.user, warehouseIdTarget);
         res.status(200).json(result);
     } catch (error) {
@@ -40,8 +39,7 @@ const detail = async(req, res, next) => {
 
 const deleteWarehouse = async (req, res, next) => {
     try {
-        const warehouseIdTarget = Number(req.params.warehouseId);
-        const result = await warehouseService.deleteWarehouse(req.user, warehouseIdTarget);
+        const result = await warehouseService.deleteWarehouse(req.user, req.body);
         res.status(200).json(result);
     } catch (error) {
         next(error);

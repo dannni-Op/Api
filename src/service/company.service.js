@@ -4,6 +4,7 @@ import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
+import { getId } from "./genereateId.service.js";
 
 const register = async (userLogin, data) => {
     const resultValidation = validate(registerCompanyValidation, data);
@@ -25,6 +26,7 @@ const register = async (userLogin, data) => {
 
     const company = await prismaClient.companies.create({
         data: {
+            companyId: getId(),
             ...resultValidation,
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
@@ -34,7 +36,7 @@ const register = async (userLogin, data) => {
     return company;
 }
 
-const update = async (userIdLogin, companyIdTarget, data) => {
+const update = async (userIdLogin, data) => {
     const resultValidation = validate(updateCompanyValidation, data);
     
     if(resultValidation.companyName || resultValidation.companyCode){
@@ -52,7 +54,7 @@ const update = async (userIdLogin, companyIdTarget, data) => {
                 AND: [
                     {
                         NOT: {
-                            companyId: companyIdTarget,
+                            companyId: resultValidation.companyId,
                         }
                     }
                 ]
@@ -64,7 +66,7 @@ const update = async (userIdLogin, companyIdTarget, data) => {
     
     const result = await prismaClient.companies.update({
         where: {
-            companyId: companyIdTarget,
+            companyId: resultValidation.companyId,
         },
         data: {
             ...data,

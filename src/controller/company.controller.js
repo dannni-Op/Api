@@ -13,8 +13,7 @@ const register = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try{
-        const companyIdTarget = Number(req.params.companyId);
-        const result = await companyService.update(req.user, companyIdTarget, req.body);
+        const result = await companyService.update(req.user, req.body);
         res.status(200).json({
             ...result,
         })
@@ -35,7 +34,7 @@ const list = async (req, res, next) => {
 
 const detail = async (req, res, next) => {
     try {
-        const companyIdTarget = Number(req.params.companyId);
+        const companyIdTarget = req.params.companyId;
         const result = await companyService.detail(req.user, companyIdTarget);
         res.status(200).json(result);
     } catch (error) {

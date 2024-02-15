@@ -12,7 +12,7 @@ datasource db {
 
 
 model companies {
-  companyId Int @id @default(autoincrement())
+  companyId String @id
   companyName String
   companyCode String
   createdAt  DateTime   @default(now())
@@ -28,7 +28,7 @@ model users {
   fullName String
   userType UserType
   companies companies? @relation(fields: [companyId], references: [companyId])
-  companyId Int?
+  companyId String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   userPermissions userPermissions[]
@@ -44,7 +44,7 @@ enum UserType {
 }
 
 model userPermissions {
-  permissionId Int @id @default(autoincrement())
+  permissionId String @id
   userId String @unique
   permissionType permissionType?
   users users @relation(fields: [userId], references: [userId], onDelete: Cascade)

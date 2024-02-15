@@ -1,7 +1,7 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { validate } from "../validation/validation.js"
-import { registerWarehousevalidation, updateWarehousevalidation, warehouseIdValidation } from "../validation/warehouse.validation.js";
+import { registerWarehousevalidation, updateWarehousevalidation, warehouseCodeValidation } from "../validation/warehouse.validation.js";
 
 const register = async (userLogin, data) => {
 
@@ -34,30 +34,18 @@ const register = async (userLogin, data) => {
 
 }
 
-const update = async (userLogin, data, warehouseIdTarget) => {
+const update = async (userLogin, data) => {
     const resultValidation = validate(updateWarehousevalidation, data);
     
     const isWarehouseExist = await prismaClient.warehouses.count({
         where:{
-            id: warehouseIdTarget,
+            code: resultValidation.code,
         }
     });
 
     if(isWarehouseExist === 0) throw new responseError(404, "Warehouse tidak ditemukan!");
 
     const newData = {};
-    if(resultValidation.code) {
-
-        const checkCode = await prismaClient.warehouses.count({
-            where: {
-                code: resultValidation.code,
-            }
-        })
-
-        if(checkCode === 1) throw new responseError(401, "Code Warehouse sudah terpakai!");
-        
-        newData.code = resultValidation.code;
-    }
     if(resultValidation.name) {
 
         const checkName = await prismaClient.warehouses.count({
@@ -76,7 +64,7 @@ const update = async (userLogin, data, warehouseIdTarget) => {
     const resultUpdate = await prismaClient.warehouses.update({
         data: newData,
         where:{
-            id: warehouseIdTarget,
+            code: resultValidation.code,
         }
     });
 
@@ -92,31 +80,31 @@ const list = async (userLogin) => {
 
 const detail = async (userLogin, warehouseIdTarget) => {
 
-    const resultValidation = validate(warehouseIdValidation, { id: warehouseIdTarget });
+    const resultValidation = validate(warehouseCodeValidation, { code: warehouseIdTarget });
     const countWarehouse = await prismaClient.warehouses.count({
         where: {
-            id: resultValidation.id,
+            code: resultValidation.id,
         }
     });
 
-    const result = await prismaClient.warehouses.findFirst({
-        where: {
-            id: resultValidation.id,
-        }
-    });
-1
     if(!countWarehouse) throw new responseError(404, "Warehouse tidak ditemukan!");
     
+    const result = await prismaClient.warehouses.findFirst({
+        where: {
+            code: resultValidation.code,
+        }
+    });
+
     return result;
 }
 
-const deleteWarehouse = async (userLogin, warehouseIdTarget) => {
+const deleteWarehouse = async (userLogin, data ) => {
 
-    const resultValidation = validate(warehouseIdValidation, { id:warehouseIdTarget });
+    const resultValidation = validate(warehouseCodeValidation, data);
     
     const countWarehouse = await prismaClient.warehouses.count({
         where: {
-            id: resultValidation.id,
+            code: resultValidation.code,
         }
     });
 
@@ -124,7 +112,7 @@ const deleteWarehouse = async (userLogin, warehouseIdTarget) => {
 
     const result = await prismaClient.warehouses.delete({
         where: {
-            id: resultValidation.id,
+            code: resultValidation.code,
         }
     });
 

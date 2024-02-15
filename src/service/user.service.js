@@ -54,6 +54,7 @@ const register = async (data) => {
     
     const resultPermission = await prismaClient.userPermissions.create({
         data: {
+            permissionId: getId(),
             userId: result.userId,
             permissionType: user.permissionType,
         }
@@ -134,14 +135,14 @@ const list = async (userLogin) => {
     return users;
 }
 
-const update = async (userLogin, data, userIdTarget) => {
+const update = async (userLogin, data) => {
     // const resultPermission = await checkPermission(userLogin);
     // if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
 
     const countUser = await prismaClient.users.count({
         where:{
-            userId: userIdTarget,
+            userId: user.userId,
         }
     });
 
@@ -157,7 +158,7 @@ const update = async (userLogin, data, userIdTarget) => {
                     },
                     {
                         NOT: {
-                            userId: userIdTarget,
+                            userId: user.userId,
                         }
                     }
                 ],
@@ -178,7 +179,7 @@ const update = async (userLogin, data, userIdTarget) => {
                     },
                     {
                         NOT: {
-                            userId: userIdTarget,
+                            userId: user.userId,
                         }
                     }
                 ],
@@ -195,7 +196,7 @@ const update = async (userLogin, data, userIdTarget) => {
 
     const result = await prismaClient.users.update({
         where:{
-            userId: userIdTarget,
+            userId: user.userId,
         },
         data: {
             ...newData,
