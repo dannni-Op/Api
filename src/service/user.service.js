@@ -192,7 +192,9 @@ const update = async (userLogin, data) => {
     }; 
     if(user.fullName) newData.fullName = user.fullName; 
     if(user.userType) newData.userType = user.userType; 
-    if(user.companyId) newData.companyId = user.companyId; 
+    if(user.companyId) {
+        (user.companyId === "null") ? newData.companyId = null : newData.companyId = user.companyId; 
+    }
 
     const result = await prismaClient.users.update({
         where:{
@@ -227,7 +229,7 @@ const update = async (userLogin, data) => {
                 permissionId: permissionExist.permissionId,
             },
             data: {
-                permissionType: user.permissionType,
+                permissionType: user.permissionType === "null" ? null : user.permissionType,
                 updatedAt: getUTCTime(new Date().toISOString()),
             }
         })

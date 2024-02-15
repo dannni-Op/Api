@@ -1,5 +1,5 @@
 import {detail, list, update} from "../controller/user.constroller.js";
-import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail} from "../controller/company.controller.js";
+import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail, deleteCompany as companyDelete} from "../controller/company.controller.js";
 import {register as warehouseRegister, update as warehouseUpdate, list as warehouseList, detail as warehouseDetail, deleteWarehouse as warehouseDelete} from "../controller/warehouse.controller.js";
 import express from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
@@ -23,6 +23,7 @@ userRouter.get("/api/users/:userId", detail);
 //company
 companyRouter.post("/api/companies/register", companyRegister);
 companyRouter.patch("/api/companies", companyUpdate);
+companyRouter.delete("/api/companies", companyDelete);
 companyRouter.get("/api/companies", companyList);
 companyRouter.get("/api/companies/:companyId", companyDetail);
 

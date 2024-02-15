@@ -111,9 +111,32 @@ const detail = async (userLogin, companyIdTarget) => {
     return result;
 }
 
+const deleteCompany = async (userLogin, data) => {
+    const validationResult = validate(companyIdValidation, data);
+
+    const isCompanyExist = await prismaClient.companies.count({
+        where: {
+            companyId: validationResult.companyCode,
+        }
+    })
+
+    if(isCompanyExist === 0) throw new responseError(404, "Company tidak ditemukan!");
+
+    const result = await prismaClient.companies.delete({
+        where: {
+            companyId:validationResult.companyId,
+        }
+    })
+
+    return {
+        message: "Deleted Success",
+    }
+}
+
 export default {
     register,
     update,
     list,
     detail,
+    deleteCompany,
 }

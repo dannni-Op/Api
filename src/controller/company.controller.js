@@ -42,9 +42,20 @@ const detail = async (req, res, next) => {
     }
 }
 
+const deleteCompany = async (req, res, next) => {
+    try {
+        const companyIdTarget = req.params.companyId;
+        const result = await companyService.deleteCompany(req.user, req.body);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
     register,
     update,
     list,
     detail,
+    deleteCompany
 }
