@@ -4,11 +4,14 @@ import {register as warehouseRegister, update as warehouseUpdate, list as wareho
 import express from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import {register as productRegister, update as productUpdate, list as productList, detail as productDetail, deleteProduct as productDelete } from "../controller/product.controller.js";
+import { register as logisticRegistert } from "../controller/logistic.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
 const warehouseRouter = new express.Router();
 const productRouter = new express.Router();
+const logisticRouter = new express.Router();
+
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
@@ -26,7 +29,7 @@ companyRouter.post("/api/companies/register", companyRegister);
 companyRouter.patch("/api/companies", companyUpdate);
 companyRouter.delete("/api/companies", companyDelete);
 companyRouter.get("/api/companies", companyList);
-companyRouter.get("/api/companies/:companyId", companyDetail);
+companyRouter.get("/api/companies/:companyCode", companyDetail);
 
 //warehouse
 warehouseRouter.post("/api/warehouses/register", warehouseRegister);
@@ -42,9 +45,13 @@ productRouter.get("/api/products", productList);
 productRouter.get("/api/products/:sku", productDetail);
 productRouter.delete("/api/products", productDelete);
 
+//Logistic
+logisticRouter.post("/api/logistics/register", logisticRegistert);
+
 export {
     userRouter,
     companyRouter,
     warehouseRouter,
     productRouter,
+    logisticRouter,
 }

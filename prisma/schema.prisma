@@ -12,9 +12,8 @@ datasource db {
 
 
 model companies {
-  companyId String @id
+  companyCode String @id
   companyName String
-  companyCode String @unique
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   users users[]
@@ -28,8 +27,8 @@ model users {
   email String
   fullName String
   userType UserType
-  companies companies? @relation(fields: [companyId], references: [companyId], onDelete: Restrict)
-  companyId String?
+  companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: Restrict)
+  companyCode String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   userPermissions userPermissions[]
@@ -65,6 +64,8 @@ model warehouses {
   name String 
   address String
   status status
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
 }
 
 enum status {
@@ -78,4 +79,14 @@ model products {
   unit String
   companyCode String?
   companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
+}
+
+model logistics {
+  logisticCode String @id
+  name String @unique
+  service String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
 }

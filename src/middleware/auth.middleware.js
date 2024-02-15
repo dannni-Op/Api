@@ -20,7 +20,7 @@ export const authMiddleware = async (req, res, next) => {
             userId: result.userId,
         },
         select: {
-            companyId: true,
+            companyCode: true,
             userType: true,
             userPermissions: true,
         }
@@ -30,7 +30,7 @@ export const authMiddleware = async (req, res, next) => {
     
     req.user = {
         userId: result.userId,
-        companyId: user.companyId,
+        companyCode: user.companyCode,
         userType: user.userType,
         permissionType: user.userPermissions[0].permissionType,
     };

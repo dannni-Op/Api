@@ -29,8 +29,7 @@ const list = async (req,res,next) => {
 
 const update = async (req,res,next) => {
     try {
-        const userIdTarget = Number(req.params.userId);
-        const result = await userService.update(req.user, req.body, userIdTarget);
+        const result = await userService.update(req.user, req.body);
         res.status(200).json(result);
     } catch (error) {
         next(error);

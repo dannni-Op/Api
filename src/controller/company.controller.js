@@ -34,8 +34,8 @@ const list = async (req, res, next) => {
 
 const detail = async (req, res, next) => {
     try {
-        const companyIdTarget = req.params.companyId;
-        const result = await companyService.detail(req.user, companyIdTarget);
+        const companyCodeTarget = req.params.companyCode;
+        const result = await companyService.detail(req.user, companyCodeTarget);
         res.status(200).json(result);
     } catch (error) {
         next(error);
@@ -44,7 +44,6 @@ const detail = async (req, res, next) => {
 
 const deleteCompany = async (req, res, next) => {
     try {
-        const companyIdTarget = req.params.companyId;
         const result = await companyService.deleteCompany(req.user, req.body);
         res.status(200).json(result);
     } catch (error) {

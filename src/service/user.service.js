@@ -37,7 +37,7 @@ const register = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
-            companyId: user.companyId,
+            companyCode: user.companyCode,
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         },
@@ -47,7 +47,7 @@ const register = async (data) => {
             email: true,
             fullName: true,
             userType: true,
-            companyId: true,
+            companyCode: true,
             createdAt: true,
         }
     });
@@ -80,7 +80,7 @@ const login = async (data) => {
             fullName: true,
             userType: true,
             password: true,
-            companyId: true,
+            companyCode: true,
             createdAt: true,
             updatedAt: true,
             userPermissions: true,
@@ -105,7 +105,7 @@ const login = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
-            companyId: user.companyId,
+            companyCode: user.companyId,
             permissionType: user.userPermissions[0].permissionType,
             createdAt: user.createdAt,
         },
@@ -123,7 +123,7 @@ const list = async (userLogin) => {
             email: true,
             fullName: true,
             userType: true,
-            companyId: true,
+            companyCode: true,
             createdAt: true,
             updatedAt: true,
             userPermissions: true,
@@ -192,8 +192,8 @@ const update = async (userLogin, data) => {
     }; 
     if(user.fullName) newData.fullName = user.fullName; 
     if(user.userType) newData.userType = user.userType; 
-    if(user.companyId) {
-        (user.companyId === "null") ? newData.companyId = null : newData.companyId = user.companyId; 
+    if(user.companyCode) {
+        (user.companyCode === "null") ? newData.companyCode = null : newData.companyCode = user.companyCode; 
     }
 
     const result = await prismaClient.users.update({
@@ -210,7 +210,7 @@ const update = async (userLogin, data) => {
             email: true,
             fullName: true,
             userType: true,
-            companyId: true,
+            companyCode: true,
             updatedAt: true,
             userPermissions: true,
         }
@@ -245,7 +245,7 @@ const update = async (userLogin, data) => {
         email: result.email,
         fullName: result.fullName,
         userType: result.userType,
-        companyId: result.companyId,
+        companyCode: result.companyCode,
         permissionType: userPermissions.permissionType,
         updatedAt: result.updatedAt,
     };
@@ -263,7 +263,7 @@ const detail = async (userLogin, userIdTarget) => {
             email: true,
             fullName: true,
             userType: true,
-            companyId: true,
+            companyCode: true,
             userPermissions: true,
             createdAt: true,
             updatedAt: true,
@@ -278,7 +278,7 @@ const detail = async (userLogin, userIdTarget) => {
         email: user.email,
         fullName: user.fullName,
         userType: user.userType,
-        companyId: user.companyId,
+        companyCode: user.companyId,
         permissionType: user.userPermissions[0].permissionType,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

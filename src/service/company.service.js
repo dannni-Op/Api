@@ -1,10 +1,9 @@
-import { companyIdValidation, registerCompanyValidation, updateCompanyValidation } from "../validation/company.validation.js"
+import { companyCodeValidation, registerCompanyValidation, updateCompanyValidation } from "../validation/company.validation.js"
 import { validate } from "../validation/validation.js"
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
-import { getId } from "./genereateId.service.js";
 
 const register = async (userLogin, data) => {
     const resultValidation = validate(registerCompanyValidation, data);
@@ -26,7 +25,6 @@ const register = async (userLogin, data) => {
 
     const company = await prismaClient.companies.create({
         data: {
-            companyId: getId(),
             ...resultValidation,
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
@@ -46,30 +44,27 @@ const update = async (userIdLogin, data) => {
                 OR:[
                     {
                         companyName: resultValidation.companyName,
-                    },
-                    {
-                        companyCode: resultValidation.companyCode,
                     }
                 ],
                 AND: [
                     {
                         NOT: {
-                            companyId: resultValidation.companyId,
+                            companyCode: resultValidation.companyCode,
                         }
                     }
                 ]
             } 
         });
 
-        if(countCompanies === 1) throw new responseError(400, "Company Name Company Code sudah ada!")
+        if(countCompanies === 1) throw new responseError(400, "Company Name sudah ada!")
     }
     
     const result = await prismaClient.companies.update({
         where: {
-            companyId: resultValidation.companyId,
+            companyCode: resultValidation.companyCode,
         },
         data: {
-            ...data,
+            companyName: resultValidation.companyName,
             updatedAt: getUTCTime(new Date().toISOString()),
         },
     });
@@ -78,31 +73,16 @@ const update = async (userIdLogin, data) => {
 }
 
 const list = async (userIdLogin) => {
-    const result = await prismaClient.companies.findMany({
-        select: {
-            companyId: true,
-            companyCode: true,
-            companyName: true,
-            createdAt: true,
-            updatedAt: true,
-        }
-    });
+    const result = await prismaClient.companies.findMany();
     if(result.length < 1) throw new responseError(404, "Companies Kosong!");
     return result;
 }
 
-const detail = async (userLogin, companyIdTarget) => {
-    const resultValidation = validate(companyIdValidation, { companyId: companyIdTarget});
+const detail = async (userLogin, companyCodeTarget) => {
+    const resultValidation = validate(companyCodeValidation, { companyCode: companyCodeTarget});
     const result = await prismaClient.companies.findFirst({
         where: {
-            companyId: companyIdTarget,
-        },
-        select: {
-            companyId: true,
-            companyCode: true,
-            companyName: true,
-            createdAt: true,
-            updatedAt: true,
+            companyCode: companyCodeTarget,
         }
     });
 1
@@ -112,11 +92,11 @@ const detail = async (userLogin, companyIdTarget) => {
 }
 
 const deleteCompany = async (userLogin, data) => {
-    const validationResult = validate(companyIdValidation, data);
+    const validationResult = validate(companyCodeValidation, data);
 
     const isCompanyExist = await prismaClient.companies.count({
         where: {
-            companyId: validationResult.companyCode,
+            companyCode: validationResult.companyCode,
         }
     })
 
@@ -124,7 +104,7 @@ const deleteCompany = async (userLogin, data) => {
 
     const result = await prismaClient.companies.delete({
         where: {
-            companyId:validationResult.companyId,
+            companyCode: validationResult.companyCode,
         }
     })
 
