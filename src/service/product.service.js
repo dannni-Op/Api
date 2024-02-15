@@ -85,7 +85,11 @@ const update = async (userLogin, data) => {
 const list = async (userLogin, data) => {
     const validationResult = validate(listProductValidation, data);
 
-    if(!validationResult.warehouseCode) return await prismaClient.products.findMany();
+    if(!validationResult.warehouseCode) {
+        const result = await prismaClient.products.findMany();
+        if(result.length < 1) throw new responseError(404, "Products kosong!");
+        return result;
+    }
 
     const isWarehouseExist = await prismaClient.warehouses.findFirst({
         where: {
