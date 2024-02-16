@@ -105,7 +105,7 @@ const login = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
-            companyCode: user.companyId,
+            companyCode: user.companyCode,
             permissionType: user.userPermissions[0].permissionType,
             createdAt: user.createdAt,
         },
