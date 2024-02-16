@@ -93,7 +93,10 @@ const update = async (userLogin, data) => {
         where: {
             logisticCode: validationResult.logisticCode,
         },
-        data: newData,
+        data: {
+            ...newData,
+            updatedAt: getUTCTime(new Date().toISOString())
+        }
     })
 
     return result;

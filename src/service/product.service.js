@@ -30,7 +30,9 @@ const register = async (userLogin, data) => {
             sku: validationResult.sku,
             name: validationResult.name,
             unit: validationResult.unit,
-            companyCode: validationResult.companyCode
+            companyCode: validationResult.companyCode,
+            createdAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(new Date().toISOString()),
         },
     })
     
@@ -76,7 +78,7 @@ const update = async (userLogin, data) => {
         where: {
             sku: validationResult.sku,
         },
-        data: newData,
+        data: { ...newData, updatedAt: getUTCTime(new Date().toISOString()), }
     })
 
     return product;

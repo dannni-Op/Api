@@ -27,6 +27,8 @@ const register = async (userLogin, data) => {
     const result = await prismaClient.warehouses.create({
         data: {
             ...resultValidation,
+            createdAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(new Date().toISOString()),
         },
     });
 
@@ -61,6 +63,7 @@ const update = async (userLogin, data) => {
     if(resultValidation.address) newData.address = resultValidation.address;
     if(resultValidation.status) newData.status = resultValidation.status;
 
+    newData.updatedAt = getUTCTime(new Date().toISOString());
     const resultUpdate = await prismaClient.warehouses.update({
         data: newData,
         where:{
