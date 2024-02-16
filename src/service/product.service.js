@@ -4,7 +4,9 @@ import { deleteProductValidation } from "../validation/product.validation.js";
 import { listProductValidation } from "../validation/product.validation.js";
 import { detailProductValidation } from "../validation/product.validation.js";
 import { registerProductValidation, updateProductValidation } from "../validation/product.validation.js"
-import { validate } from "../validation/validation.js"
+import { validate } from "../validation/validation.js";
+import { getUTCTime } from "./time.service.js";
+
 
 const register = async (userLogin, data) => {
     

@@ -1,6 +1,7 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { validate } from "../validation/validation.js"
+import { validate } from "../validation/validation.js";
+import { getUTCTime } from "./time.service.js";
 import { registerWarehousevalidation, updateWarehousevalidation, warehouseCodeValidation } from "../validation/warehouse.validation.js";
 
 const register = async (userLogin, data) => {
