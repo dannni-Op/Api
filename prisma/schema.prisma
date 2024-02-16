@@ -88,6 +88,5 @@ model logistics {
   name String @unique
   service String
   createdAt  DateTime   @default(now())
-  
   updatedAt  DateTime   @default(now())
 }
