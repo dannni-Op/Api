@@ -117,7 +117,7 @@ const deleteWarehouse = async (userLogin, data ) => {
     });
 
     return {
-        message: "Deleted Success",
+        message: "Delete Success",
     }
 }
 

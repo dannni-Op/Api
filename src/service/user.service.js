@@ -303,7 +303,7 @@ const deleteUser = async (userLogin, data) => {
     })
 
     return {
-        message: "Deleted Success",
+        message: "Delete success",
     }
 }
 

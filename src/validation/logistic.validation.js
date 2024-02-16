@@ -6,7 +6,7 @@ const registerLogisticValidation = Joi.object({
     service: Joi.string().max(191).required(),
 });
 
-const logictisCodeValidation = Joi.object({
+const logisticCodeValidation = Joi.object({
     logisticCode: Joi.string().max(191).required(),
 })
 
@@ -16,9 +16,8 @@ const updateLogisticValidation = Joi.object({
     service: Joi.string().max(191).optional(),
 });
 
-
 export {
     registerLogisticValidation,
-    logictisCodeValidation,
+    logisticCodeValidation,
     updateLogisticValidation,
 }

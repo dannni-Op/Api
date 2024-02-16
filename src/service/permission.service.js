@@ -5,7 +5,7 @@ import { responseError } from "../error/response.error.js";
 const checkPermission = async (data, permission = null) => {
     const user = await prismaClient.users.findFirst({
         where: {
-            
+
             AND: [
                 {
                     userId: data.userId,

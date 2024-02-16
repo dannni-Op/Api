@@ -140,7 +140,7 @@ const deleteProduct = async (userLogin, data) => {
     });
 
     return {
-        message: "Deleted Success",
+        message: "Delete Success",
     }
 }
 
