@@ -278,7 +278,7 @@ const detail = async (userLogin, userIdTarget) => {
         email: user.email,
         fullName: user.fullName,
         userType: user.userType,
-        companyCode: user.companyId,
+        companyCode: user.companyCode,
         permissionType: user.userPermissions[0].permissionType,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
