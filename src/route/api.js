@@ -5,17 +5,21 @@ import express from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import {register as productRegister, update as productUpdate, list as productList, detail as productDetail, deleteProduct as productDelete } from "../controller/product.controller.js";
 import { register as logisticRegistert, list as logisticList, detail as logisticDetail, update as logisticUpdate, deleteLogistic as logisticDelete } from "../controller/logistic.controller.js";
+import { deleteStock as stockDelete, register as stockRegister, list as stockList, update as stockUpdate, detail as stockDetail } from "../controller/stock.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
 const warehouseRouter = new express.Router();
 const productRouter = new express.Router();
 const logisticRouter = new express.Router();
+const stockRouter = new express.Router();
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
 warehouseRouter.use(authMiddleware);
 productRouter.use(authMiddleware);
+logisticRouter.use(authMiddleware);
+stockRouter.use(authMiddleware);
 
 //user
 userRouter.patch("/api/users", update);
@@ -51,10 +55,18 @@ logisticRouter.get("/api/logistics/:logisticCode", logisticDetail);
 logisticRouter.patch("/api/logistics", logisticUpdate);
 logisticRouter.delete("/api/logistics", logisticDelete);
 
+//stock
+stockRouter.post("/api/stocks/register", stockRegister);
+stockRouter.get("/api/stocks", stockList);
+stockRouter.patch("/api/stocks", stockUpdate);
+stockRouter.get("/api/stocks/:stockId", stockDetail);
+stockRouter.delete("/api/stocks", stockDelete);
+
 export {
     userRouter,
     companyRouter,
     warehouseRouter,
     productRouter,
     logisticRouter,
+    stockRouter,
 }
