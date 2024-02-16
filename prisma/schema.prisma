@@ -18,6 +18,7 @@ model companies {
   updatedAt  DateTime   @default(now())
   users users[]
   products products[]
+  stocks stocks[]
 }
 
 model users {
@@ -66,6 +67,7 @@ model warehouses {
   status status
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
+  stocks stocks[]
 }
 
 enum status {
@@ -81,12 +83,26 @@ model products {
   companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: SetNull)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
+  stocks stocks[]
 }
 
 model logistics {
   logisticCode String @id
   name String @unique
   service String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
+}
+
+model stocks {
+  stockId String @id
+  sku String
+  code String
+  companyCode String
+  stock Int
+  companies companies @relation(fields: [companyCode], references: [companyCode], onDelete: Restrict)
+  products products @relation(fields: [sku], references: [sku], onDelete: Restrict)
+  warehouses warehouses @relation(fields: [code], references: [code], onDelete: Restrict)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
