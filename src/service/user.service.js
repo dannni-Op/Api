@@ -49,21 +49,11 @@ const register = async (data) => {
             userType: true,
             companyCode: true,
             createdAt: true,
-        }
-    });
-    
-    const resultPermission = await prismaClient.userPermissions.create({
-        data: {
-            permissionId: getId(),
-            userId: result.userId,
-            permissionType: user.permissionType,
+            updatedAt: true,
         }
     });
 
-    return {
-        ...result,
-        permissionType: resultPermission.permissionType,
-    };
+    return result ;
 }
 
 const login = async (data) => {
@@ -83,7 +73,6 @@ const login = async (data) => {
             companyCode: true,
             createdAt: true,
             updatedAt: true,
-            userPermissions: true,
         }
     });
     if(!user) throw new responseError(401, "Username atau Password salah");
@@ -106,8 +95,8 @@ const login = async (data) => {
             fullName: user.fullName,
             userType: user.userType,
             companyCode: user.companyCode,
-            permissionType: user.userPermissions[0].permissionType,
             createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
         },
         token,
     };
@@ -126,9 +115,8 @@ const list = async (userLogin) => {
             companyCode: true,
             createdAt: true,
             updatedAt: true,
-            userPermissions: true,
         }
-        });
+    });
 
     if(users.length < 1) throw new responseError(404, "Users Kosong!");
 
@@ -211,44 +199,12 @@ const update = async (userLogin, data) => {
             fullName: true,
             userType: true,
             companyCode: true,
+            createdAt: true,
             updatedAt: true,
-            userPermissions: true,
         }
     });
 
-    let userPermissions = {};
-    if(user.permissionType){
-        const permissionExist = await prismaClient.userPermissions.findFirst({
-            where: {
-                userId: result.userId,
-            }
-        });
-
-        const updateResult = await prismaClient.userPermissions.update({
-            where : {
-                permissionId: permissionExist.permissionId,
-            },
-            data: {
-                permissionType: user.permissionType === "null" ? null : user.permissionType,
-                updatedAt: getUTCTime(new Date().toISOString()),
-            }
-        })
-
-        userPermissions.permissionType = updateResult.permissionType;
-    }else{
-        userPermissions.permissionType = result.userPermissions[0].permissionType;
-    }
-
-    return {
-        userId: result.userId,
-        username: result.username,
-        email: result.email,
-        fullName: result.fullName,
-        userType: result.userType,
-        companyCode: result.companyCode,
-        permissionType: userPermissions.permissionType,
-        updatedAt: result.updatedAt,
-    };
+    return result ;
 }
 
 const detail = async (userLogin, userIdTarget) => {
@@ -264,7 +220,6 @@ const detail = async (userLogin, userIdTarget) => {
             fullName: true,
             userType: true,
             companyCode: true,
-            userPermissions: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -279,7 +234,6 @@ const detail = async (userLogin, userIdTarget) => {
         fullName: user.fullName,
         userType: user.userType,
         companyCode: user.companyCode,
-        permissionType: user.userPermissions[0].permissionType,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     };
@@ -288,23 +242,36 @@ const detail = async (userLogin, userIdTarget) => {
 const deleteUser = async (userLogin, data) => {
     const validationResult = validate(idUserValidation, data);
 
-    const isUserExist = await prismaClient.users.count({
+    const isUserExist = await prismaClient.users.findFirst({
         where: {
             userId: validationResult.userId,
+        },
+        select: {
+            userPermissions: true,
         }
     });
 
-    if(isUserExist === 0) throw new responseError(404, "User tidak ditemukan!");
+    if(!isUserExist) throw new responseError(404, "User tidak ditemukan!");
+
+    if(isUserExist.userPermissions.length !== 0){
+        await prismaClient.userPermissions.delete({
+            where: {
+                userId: validationResult.userId,
+            }
+        });
+    }
+    
 
     const result = await prismaClient.users.delete({
         where: {
             userId: validationResult.userId,
         }
-    })
+    });
+
 
     return {
         message: "Delete success",
-    }
+    };
 }
 
 export default {

@@ -18,21 +18,13 @@ export const authMiddleware = async (req, res, next) => {
     const user = await prismaClient.users.findFirst({
         where: {
             userId: result.userId,
-        },
-        select: {
-            companyCode: true,
-            userType: true,
-            userPermissions: true,
         }
     })
 
     if(!user) return res.status(401).json({ errors: "Unauthorized" })
     
     req.user = {
-        userId: result.userId,
-        companyCode: user.companyCode,
-        userType: user.userType,
-        permissionType: user.userPermissions[0].permissionType,
+        userId: result.userId
     };
     next();
 }

@@ -7,7 +7,6 @@ const registerUserValidation = Joi.object({
     fullName: Joi.string().max(191).required(),
     userType: Joi.string().valid('Owner', 'Admin','Officer','Finance','Customer_Admin','Customer_Service').required(),
     companyCode: Joi.string().max(191).optional(),
-    permissionType: Joi.string().valid('Inbound','Outbound','Stock_Transfer','Order_Management').optional(),
 })
 
 const loginUserValidation = Joi.object({
@@ -29,7 +28,6 @@ const updateUserValidation = Joi.object({
     fullName: Joi.string().max(191).optional(),
     userType: Joi.string().valid('Owner', 'Admin','Officer','Finance','Customer_Admin','Customer_Service').optional(),
     companyCode: Joi.string().max(191).optional(),
-    permissionType: Joi.string().valid('Inbound','Outbound','Stock_Transfer','Order_Management',"null").optional(),
 })
 
 export {

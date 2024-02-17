@@ -1,4 +1,5 @@
 import {detail, list, update, deleteUser as userDelete } from "../controller/user.constroller.js";
+import { register as userPermissionRegister, detail as userPermissionDetail, list as userPermissionList, update as userPermissionUpdate } from "../controller/userPermission.controller.js";
 import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail, deleteCompany as companyDelete} from "../controller/company.controller.js";
 import {register as warehouseRegister, update as warehouseUpdate, list as warehouseList, detail as warehouseDetail, deleteWarehouse as warehouseDelete} from "../controller/warehouse.controller.js";
 import express from "express";
@@ -13,6 +14,7 @@ const warehouseRouter = new express.Router();
 const productRouter = new express.Router();
 const logisticRouter = new express.Router();
 const stockRouter = new express.Router();
+const userPermissionRouter = new express.Router();
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
@@ -20,12 +22,19 @@ warehouseRouter.use(authMiddleware);
 productRouter.use(authMiddleware);
 logisticRouter.use(authMiddleware);
 stockRouter.use(authMiddleware);
+userPermissionRouter.use(authMiddleware);
 
 //user
 userRouter.patch("/api/users", update);
 userRouter.get("/api/users", list);
 userRouter.get("/api/users/:userId", detail);
 userRouter.delete("/api/users", userDelete);
+
+//user permission
+userPermissionRouter.post("/api/user-permissions/register", userPermissionRegister);
+userPermissionRouter.get("/api/user-permissions/:userId", userPermissionDetail);
+userPermissionRouter.get("/api/user-permissions", userPermissionList);
+userPermissionRouter.patch("/api/user-permissions", userPermissionUpdate);
 
 //company
 companyRouter.post("/api/companies/register", companyRegister);
@@ -69,4 +78,5 @@ export {
     productRouter,
     logisticRouter,
     stockRouter,
+    userPermissionRouter,
 }
