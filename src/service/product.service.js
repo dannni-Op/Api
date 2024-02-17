@@ -25,7 +25,7 @@ const register = async (userLogin, data) => {
         }
     })
 
-    if(countProduct === 1) throw new responseError(401, "SKU atau Name Product sudah terdaftar!");
+    if(countProduct === 1) throw new responseError(401, "SKU atau name product sudah terdaftar!");
 
     const product = await prismaClient.products.create({
         data: {

@@ -8,7 +8,8 @@ const registerStockValidation = Joi.object({
 })
 
 const updateStockValidation = Joi.object({
-    sku: Joi.string().max(191).required(),
+    stockId: Joi.string().max(191).required(),
+    sku: Joi.string().max(191).optional(),
     code: Joi.string().max(191).optional(),
     companyCode: Joi.string().max(191).optional(),
     stock: Joi.number().positive().optional(),
