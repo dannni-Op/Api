@@ -37,7 +37,7 @@ const register = async (userLogin, data) => {
 
 const list = async (userLogin) => {
     const result = await prismaClient.logistics.findMany();
-    if(result.length < 1) throw new responseError(404, "List Logistics kosong!");
+    if(result.length < 1) throw new responseError(404, "List logistics kosong!");
     return result;
 }
 
