@@ -5,6 +5,7 @@ import { listProductValidation } from "../validation/product.validation.js";
 import { detailProductValidation } from "../validation/product.validation.js";
 import { registerProductValidation, updateProductValidation } from "../validation/product.validation.js"
 import { validate } from "../validation/validation.js";
+import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 
 
@@ -87,6 +88,7 @@ const update = async (userLogin, data) => {
 }
 
 const list = async (userLogin, data) => {
+    const checkResult = await checkPermission(userLogin, "read", "products");
     const validationResult = validate(listProductValidation, data);
 
     if(!validationResult.companyCode) {

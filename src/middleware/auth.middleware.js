@@ -17,14 +17,13 @@ export const authMiddleware = async (req, res, next) => {
 
     const user = await prismaClient.users.findFirst({
         where: {
-            userId: result.userId,
+            userId: result.key,
         }
     })
-
-    if(!user) return res.status(401).json({ errors: "Unauthorized" })
     
+    if(!user) return res.status(401).json({ errors: "Unauthorized" })
     req.user = {
-        userId: result.userId
+        userId: result.key
     };
     next();
 }
