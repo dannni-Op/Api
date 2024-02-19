@@ -3,7 +3,7 @@
 import { prismaClient } from "../app/db.js"
 import { responseError } from "../error/response.error.js";
 
-const checkPermission = async (userLogin, userValidation, type) => {
+const checkPermission = async (userLogin, userValidation) => {
     
     let userSide;
     //check user ada atau tidak

@@ -88,7 +88,7 @@ const update = async (userLogin, data) => {
 }
 
 const list = async (userLogin, data) => {
-    const checkResult = await checkPermission(userLogin, "backOffice", "All");
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(listProductValidation, data);
 
     if(!validationResult.companyCode) {
@@ -116,6 +116,7 @@ const list = async (userLogin, data) => {
 }
 
 const detail = async (userLogin, data) => {
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(detailProductValidation, data);
     const product = await prismaClient.products.findFirst({
         where: {

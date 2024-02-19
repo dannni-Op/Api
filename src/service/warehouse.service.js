@@ -3,9 +3,11 @@ import { responseError } from "../error/response.error.js";
 import { validate } from "../validation/validation.js";
 import { getUTCTime } from "./time.service.js";
 import { registerWarehousevalidation, updateWarehousevalidation, warehouseCodeValidation } from "../validation/warehouse.validation.js";
+import { checkPermission } from "./permission.service.js";
 
 const register = async (userLogin, data) => {
 
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(registerWarehousevalidation, data);
 
     const warehouse = await prismaClient.warehouses.count({
@@ -38,6 +40,7 @@ const register = async (userLogin, data) => {
 }
 
 const update = async (userLogin, data) => {
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(updateWarehousevalidation, data);
     
     const isWarehouseExist = await prismaClient.warehouses.count({
@@ -77,13 +80,14 @@ const update = async (userLogin, data) => {
 }
 
 const list = async (userLogin) => {
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const result = await prismaClient.warehouses.findMany();
     if(result.length < 1) throw new responseError(404, "Warehouses Kosong");
     return result;
 }
 
 const detail = async (userLogin, warehouseIdTarget) => {
-
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(warehouseCodeValidation, { code: warehouseIdTarget });
     const countWarehouse = await prismaClient.warehouses.count({
         where: {
@@ -103,7 +107,7 @@ const detail = async (userLogin, warehouseIdTarget) => {
 }
 
 const deleteWarehouse = async (userLogin, data ) => {
-
+    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(warehouseCodeValidation, data);
     
     const countWarehouse = await prismaClient.warehouses.count({
