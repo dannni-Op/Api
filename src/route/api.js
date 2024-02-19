@@ -7,6 +7,7 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 import {register as productRegister, update as productUpdate, list as productList, detail as productDetail, deleteProduct as productDelete } from "../controller/product.controller.js";
 import { register as logisticRegistert, list as logisticList, detail as logisticDetail, update as logisticUpdate, deleteLogistic as logisticDelete } from "../controller/logistic.controller.js";
 import { deleteStock as stockDelete, register as stockRegister, list as stockList, update as stockUpdate, detail as stockDetail } from "../controller/stock.controller.js";
+import { register as materialRegister, list as materialList, detail as materialDetail, deleteMaterial as materialDelete, update as materialUpdate } from "../controller/material.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
@@ -15,6 +16,7 @@ const productRouter = new express.Router();
 const logisticRouter = new express.Router();
 const stockRouter = new express.Router();
 const userPermissionRouter = new express.Router();
+const materialRouter = new express.Router();
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
@@ -23,6 +25,7 @@ productRouter.use(authMiddleware);
 logisticRouter.use(authMiddleware);
 stockRouter.use(authMiddleware);
 userPermissionRouter.use(authMiddleware);
+materialRouter.use(authMiddleware);
 
 //user
 userRouter.patch("/api/users", update);
@@ -71,6 +74,13 @@ stockRouter.patch("/api/stocks", stockUpdate);
 stockRouter.get("/api/stocks/:stockId", stockDetail);
 stockRouter.delete("/api/stocks", stockDelete);
 
+//material
+materialRouter.post("/api/materials/register", materialRegister);
+materialRouter.get("/api/materials", materialList);
+materialRouter.get("/api/materials/:materialId", materialDetail);
+materialRouter.delete("/api/materials", materialDelete);
+materialRouter.patch("/api/materials", materialUpdate);
+
 export {
     userRouter,
     companyRouter,
@@ -79,4 +89,5 @@ export {
     logisticRouter,
     stockRouter,
     userPermissionRouter,
+    materialRouter,
 }
