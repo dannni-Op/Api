@@ -88,7 +88,7 @@ const update = async (userLogin, data) => {
 }
 
 const list = async (userLogin, data) => {
-    const checkResult = await checkPermission(userLogin, "read", "products");
+    const checkResult = await checkPermission(userLogin, "backOffice", "All");
     const validationResult = validate(listProductValidation, data);
 
     if(!validationResult.companyCode) {

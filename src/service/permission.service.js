@@ -3,7 +3,7 @@
 import { prismaClient } from "../app/db.js"
 import { responseError } from "../error/response.error.js";
 
-const checkPermission = async (userLogin, action, target) => {
+const checkPermission = async (userLogin, userValidation, type) => {
     
     let userSide;
     //check user ada atau tidak
@@ -26,6 +26,10 @@ const checkPermission = async (userLogin, action, target) => {
     if(!userPermissions) throw new responseError(401, "User tidak punya permission!");
     
     userSide = user.companyCode ? "clientSide" : "backOffice";
+
+    if(userSide !== userValidation) throw new responseError(403, "Limit access!");
+
+    return true;
 }
 
 export {
