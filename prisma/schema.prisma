@@ -15,6 +15,7 @@ model companies {
   companyId String @id
   companyCode String 
   companyName String
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   users users[]
@@ -66,6 +67,7 @@ model warehouses {
   name String 
   address String
   status status
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   stocks stocks[]
@@ -83,15 +85,18 @@ model products {
   unit String
   companyId String?
   companies companies? @relation(fields: [companyId], references: [companyId], onDelete: SetNull)
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   stocks stocks[]
 }
 
 model logistics {
-  logisticCode String @id
+  logisticId String @id
+  logisticCode String 
   name String @unique
   service String
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
@@ -103,6 +108,7 @@ model stocks {
   stock Int
   products products @relation(fields: [productId], references: [productId], onDelete: Restrict)
   warehouses warehouses @relation(fields: [warehouseId], references: [warehouseId], onDelete: Restrict)
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
@@ -111,6 +117,7 @@ model materials {
   materialId String @id
   materialName String
   unit String
+  createdBy String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }

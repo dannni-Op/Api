@@ -5,6 +5,7 @@ import { listProductValidation } from "../validation/product.validation.js";
 import { detailProductValidation } from "../validation/product.validation.js";
 import { registerProductValidation, updateProductValidation } from "../validation/product.validation.js"
 import { validate } from "../validation/validation.js";
+import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
@@ -37,6 +38,7 @@ const register = async (userLogin, data) => {
             name: validationResult.name,
             unit: validationResult.unit,
             companyId: validationResult.companyId,
+            createdBy: await createdBy(userLogin.userId),
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         },

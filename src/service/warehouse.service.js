@@ -5,6 +5,7 @@ import { getUTCTime } from "./time.service.js";
 import { registerWarehousevalidation, updateWarehousevalidation, warehouseIdValidation } from "../validation/warehouse.validation.js";
 import { checkPermission } from "./permission.service.js";
 import { getId } from "./genereateId.service.js";
+import { createdBy } from "./created.service.js";
 
 const register = async (userLogin, data) => {
 
@@ -34,6 +35,7 @@ const register = async (userLogin, data) => {
         data: {
             warehouseId: getId(),
             ...resultValidation,
+            createdBy: await createdBy(userLogin.userId),
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         },

@@ -20,7 +20,7 @@ const list = async (req, res, next) => {
 
 const detail = async (req, res, next) => {
     try {
-        const result = await logisticService.detail(req.user, req.params.logisticCode);
+        const result = await logisticService.detail(req.user, req.params.logisticId);
         res.status(200).json(result);
     } catch (error) {
         next(error);

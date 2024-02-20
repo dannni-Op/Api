@@ -2,6 +2,7 @@ import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { materialIdValidation, registerMaterialValidation, updateMaterialValidation } from "../validation/material.validation.js"
 import { validate } from "../validation/validation.js"
+import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
 
@@ -21,6 +22,7 @@ const register = async (userLogin, data) => {
         data: {
             materialId: getId(),
             ...validationResult,
+            createdBy: await createdBy(userLogin.userId),
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         }

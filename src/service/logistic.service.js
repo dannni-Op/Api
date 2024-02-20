@@ -1,32 +1,35 @@
-import { logisticCodeValidation, registerLogisticValidation, updateLogisticValidation } from "../validation/logistic.validation.js"
+import { logisticIdValidation, registerLogisticValidation, updateLogisticValidation } from "../validation/logistic.validation.js"
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { validate } from "../validation/validation.js";
 import { getUTCTime } from "./time.service.js";
+import { getId } from "./genereateId.service.js";
+import { createdBy } from "./created.service.js";
 
 const register = async (userLogin, data) => {
     const validationResult = validate(registerLogisticValidation, data);
 
     const isLogisticExist = await prismaClient.logistics.count({
         where: {
-            AND:[
-                {
-                    name: validationResult.name,
-                },
-                {
-                    NOT: {
-                        logisticCode: validationResult.logisticCode,
-                    }
-                }
-            ],
+            logisticCode: validationResult.logisticCode,
         } 
     })
 
-    if(isLogisticExist === 1 ) throw new responseError(403, "Logistic name sudah ada!");
+    if(isLogisticExist === 1 ) throw new responseError(403, "Logistic code sudah ada!");
+
+    const checkName = await prismaClient.logistics.count({
+        where: {
+            name: validationResult.name,
+        }
+    })
+
+    if(checkName === 1 ) throw new responseError(403, "Logistic name sudah ada!");
 
     const result = await prismaClient.logistics.create({
         data: {
+            logisticId: getId(),
             ...validationResult,
+            createdBy: await createdBy(userLogin.userId),
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         }
@@ -37,16 +40,16 @@ const register = async (userLogin, data) => {
 
 const list = async (userLogin) => {
     const result = await prismaClient.logistics.findMany();
-    if(result.length < 1) throw new responseError(404, "List logistics kosong!");
+    if(result.length < 1) throw new responseError(404, "List  logistics kosong!");
     return result;
 }
 
-const detail = async (userLogin, logisticCode) => {
-    const validationResult = validate(logisticCodeValidation, { logisticCode,} );
+const detail = async (userLogin, logisticId ) => {
+    const validationResult = validate(logisticIdValidation, { logisticId,} );
 
     const result = await prismaClient.logistics.findFirst({
         where: {
-            logisticCode: validationResult.logisticCode,
+            logisticId: validationResult.logisticId,
         }
     });
 
@@ -60,13 +63,33 @@ const update = async (userLogin, data) => {
 
     const isLogisticExist = await prismaClient.logistics.count({
         where: {
-            logisticCode: validationResult.logisticCode,
+            logisticId: validationResult.logisticId,
         }
     })
 
     if(isLogisticExist === 0) throw new responseError(404, "Logistic tidak ditemukan!");
 
     const newData = {};
+
+    if(validationResult.logisticCode) {
+        const result = await prismaClient.logistics.count({
+            where: {
+                AND: [
+                    {
+                        logisticCode: validationResult.logisticCode,
+                    },
+                    {
+                        NOT: {
+                            logisticId: validationResult.logisticId,
+                        }
+                    }
+                ]
+            }
+        })
+        if(result === 1) throw new responseError(403, "Logistic code sudah ada!");
+        newData.logisticCode = validationResult.logisticCode;
+    }
+    
     if(validationResult.name) {
         const isNameExist = await prismaClient.logistics.count({
             where: {
@@ -76,13 +99,13 @@ const update = async (userLogin, data) => {
                     },
                     {
                         NOT: {
-                            logisticCode: validationResult.logisticCode,
+                            logisticId: validationResult.logisticId,
                         }
                     }
                 ]
             }
         })
-        if(isNameExist === 1) throw new responseError(403, "Nama sudah terpakai!");
+        if(isNameExist === 1) throw new responseError(403, "Logistic name sudah ada!");
         newData.name = validationResult.name;
     }
 
@@ -91,7 +114,7 @@ const update = async (userLogin, data) => {
 
     const result = await prismaClient.logistics.update({
         where: {
-            logisticCode: validationResult.logisticCode,
+            logisticId: validationResult.logisticId,
         },
         data: {
             ...newData,
@@ -103,11 +126,11 @@ const update = async (userLogin, data) => {
 }
 
 const deleteLogistic = async (userLogin, data) => {
-    const validationResult = validate(logisticCodeValidation, data );
+    const validationResult = validate(logisticIdValidation, data );
 
     const check = await prismaClient.logistics.findFirst({
         where: {
-            logisticCode: validationResult.logisticCode,
+            logisticId: validationResult.logisticId,
         }
     });
 
@@ -115,7 +138,7 @@ const deleteLogistic = async (userLogin, data) => {
 
     const result = await prismaClient.logistics.delete({
         where: {
-            logisticCode: validationResult.logisticCode,
+            logisticId: validationResult.logisticId,
         }
     });
 

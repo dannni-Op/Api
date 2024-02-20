@@ -62,7 +62,7 @@ productRouter.delete("/api/products", productDelete);
 //Logistic
 logisticRouter.post("/api/logistics/register", logisticRegistert);
 logisticRouter.get("/api/logistics", logisticList);
-logisticRouter.get("/api/logistics/:logisticCode", logisticDetail);
+logisticRouter.get("/api/logistics/:logisticId", logisticDetail);
 logisticRouter.patch("/api/logistics", logisticUpdate);
 logisticRouter.delete("/api/logistics", logisticDelete);
 
