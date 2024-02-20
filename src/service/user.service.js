@@ -37,7 +37,7 @@ const register = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
-            companyCode: user.companyCode,
+            companyId: user.companyId,
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         },
@@ -47,7 +47,7 @@ const register = async (data) => {
             email: true,
             fullName: true,
             userType: true,
-            companyCode: true,
+            companyId: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -70,7 +70,7 @@ const login = async (data) => {
             fullName: true,
             userType: true,
             password: true,
-            companyCode: true,
+            companyId: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -94,7 +94,7 @@ const login = async (data) => {
             email: user.email,
             fullName: user.fullName,
             userType: user.userType,
-            companyCode: user.companyCode,
+            companyId: user.companyId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         },
@@ -112,7 +112,7 @@ const list = async (userLogin) => {
             email: true,
             fullName: true,
             userType: true,
-            companyCode: true,
+            companyId: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -180,8 +180,8 @@ const update = async (userLogin, data) => {
     }; 
     if(user.fullName) newData.fullName = user.fullName; 
     if(user.userType) newData.userType = user.userType; 
-    if(user.companyCode) {
-        (user.companyCode === "null") ? newData.companyCode = null : newData.companyCode = user.companyCode; 
+    if(user.companyId) {
+        (user.companyCode === "null") ? newData.companyId = null : newData.companyId = user.companyId; 
     }
 
     const result = await prismaClient.users.update({
@@ -198,7 +198,7 @@ const update = async (userLogin, data) => {
             email: true,
             fullName: true,
             userType: true,
-            companyCode: true,
+            companyId: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -207,11 +207,11 @@ const update = async (userLogin, data) => {
     return result ;
 }
 
-const detail = async (userLogin, userIdTarget) => {
+const detail = async (userLogin, userId) => {
 
     const user = await prismaClient.users.findFirst({
         where:{
-            userId: userIdTarget,
+            userId,
         },
         select: {
             userId: true,
@@ -219,7 +219,7 @@ const detail = async (userLogin, userIdTarget) => {
             email: true,
             fullName: true,
             userType: true,
-            companyCode: true,
+            companyId: true,
             createdAt: true,
             updatedAt: true,
         }
@@ -233,7 +233,7 @@ const detail = async (userLogin, userIdTarget) => {
         email: user.email,
         fullName: user.fullName,
         userType: user.userType,
-        companyCode: user.companyCode,
+        companyId: user.companyId,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     };

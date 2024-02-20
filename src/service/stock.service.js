@@ -10,34 +10,35 @@ const register = async (userLogin, data) => {
 
     const isProductExist = await prismaClient.products.findFirst({
         where: {
-            AND: [
-                {
-                    sku: validationResult.sku,
-                },
-                {
-                    companyCode: validationResult.companyCode,
-                }
-            ]
+            productId: validationResult.productId,
         }
     });
 
     if(!isProductExist) throw new responseError(404, "Product tidak ditemukan!");
 
-    const as = await prismaClient.stocks.count({
+    const isWarehouseExist = await prismaClient.warehouses.findFirst({
+        where: {
+            warehouseId: validationResult.warehouseId,
+        }
+    });
+
+    if(!isWarehouseExist) throw new responseError(404, "Warehouse tidak ditemukan!");
+
+    const checkProductStock = await prismaClient.stocks.count({
         where: {
             AND: [
                 {
-                    sku: validationResult.sku,
+                    productId: validationResult.productId,
                 },
                 {
-                    companyCode: validationResult.companyCode,
+                    warehouseId: validationResult.warehouseId,
                 }
             ]
         }
     });
 
-    if(isProductExist === 1) throw new responseError(403, "Product Stock sudah terdaftar!");
-
+    if(checkProductStock === 1) throw new responseError(403, "Product Stock sudah terdaftar!");
+    
     const result = await prismaClient.stocks.create({
         data: {
             stockId: getId(),
@@ -67,91 +68,44 @@ const update = async (userLogin, data) => {
 
     if(!stock) throw new responseError(404, "Product stock tidak ditemukan!");
 
-    const checkProduct = await prismaClient.products.findFirst({
+    const check = await prismaClient.stocks.findFirst({
         where: {
             AND: [
                 {
-                    sku: validationResult.sku ?? stock.sku,
+                    warehouseId: validationResult.warehouseId ?? stock.warehouseId,
+                    productId: validationResult.productId ?? stock.productId,
                 },
                 {
-                    companyCode: validationResult.companyCode ?? stock.companyCode,
-                }
+                    NOT: {
+                        stockId: validationResult.stockId,
+                    }
+                },
             ]
         }
-    });
+    })
 
-    if(!checkProduct) throw new responseError(404, "Product tidak ada!");
+    if(check) throw new responseError(403, "Product stock sudah terdaftar!");
     
     const newData = {};
 
-    if(validationResult.sku){
+    if(validationResult.productId){
         const result = await prismaClient.products.findFirst({ where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         } });
         if(!result) throw new responseError(404, "Product tidak ada!");
 
-        const check = await prismaClient.stocks.findFirst({
-            where: {
-                AND: [
-                    {
-                        sku: validationResult.sku
-                    },
-                    {
-                        companyCode: validationResult.companyCode ?? stock.companyCode,
-                    },
-                    {
-                        NOT: {
-                            stockId: validationResult.stockId,
-                        }
-                    },
-                ]
-            }
-        })
-
-        if(check) throw new responseError(403, "Product stock sudah terdaftar!");
-
-        newData.sku = validationResult.sku;
+        newData.productId = validationResult.productId;
     }
 
-    if(validationResult.code){
+    if(validationResult.warehouseId){
         const isWarehouseExist = await prismaClient.warehouses.count({
             where: {
-                code: validationResult.code,
+                warehouseId: validationResult.warehouseId,
             }
         })
         if(isWarehouseExist === 0)throw new responseError(404, "Warehouse tidak ada!");
-        newData.code = validationResult.code;
-    }
-
-    if(validationResult.companyCode){
-        const isCompanyExist = await prismaClient.companies.findFirst({
-            where: {
-                companyCode: validationResult.companyCode,
-            }
-        });
-        if(!isCompanyExist) throw new responseError(404, "Company tidak ada!")
-
-        const check = await prismaClient.stocks.findFirst({
-            where: {
-                AND: [
-                    {
-                        companyCode: validationResult.companyCode,
-                    },
-                    {
-                        sku: validationResult.sku ?? stock.sku,
-                    },
-                    {
-                        NOT: {
-                            stockId: validationResult.stockId,
-                        }
-                    },
-                ]
-            }
-        })
-
-        if(check) throw new responseError(403, "Product stock sudah terdaftar!");
         
-        newData.companyCode = validationResult.companyCode;
+        newData.warehouseId = validationResult.warehouseId;
     }
 
     if(validationResult.stock) newData.stock = validationResult.stock;

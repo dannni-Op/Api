@@ -1,5 +1,5 @@
 import {detail, list, update, deleteUser as userDelete } from "../controller/user.constroller.js";
-import { register as userPermissionRegister, detail as userPermissionDetail, list as userPermissionList, update as userPermissionUpdate } from "../controller/userPermission.controller.js";
+import { detail as userPermissionDetail, list as userPermissionList, update as userPermissionUpdate } from "../controller/userPermission.controller.js";
 import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail, deleteCompany as companyDelete} from "../controller/company.controller.js";
 import {register as warehouseRegister, update as warehouseUpdate, list as warehouseList, detail as warehouseDetail, deleteWarehouse as warehouseDelete} from "../controller/warehouse.controller.js";
 import express from "express";
@@ -34,7 +34,6 @@ userRouter.get("/api/users/:userId", detail);
 userRouter.delete("/api/users", userDelete);
 
 //user permission
-userPermissionRouter.post("/api/user-permissions/register", userPermissionRegister);
 userPermissionRouter.get("/api/user-permissions/:userId", userPermissionDetail);
 userPermissionRouter.get("/api/user-permissions", userPermissionList);
 userPermissionRouter.patch("/api/user-permissions", userPermissionUpdate);
@@ -44,7 +43,7 @@ companyRouter.post("/api/companies/register", companyRegister);
 companyRouter.patch("/api/companies", companyUpdate);
 companyRouter.delete("/api/companies", companyDelete);
 companyRouter.get("/api/companies", companyList);
-companyRouter.get("/api/companies/:companyCode", companyDetail);
+companyRouter.get("/api/companies/:companyId", companyDetail);
 
 //warehouse
 warehouseRouter.post("/api/warehouses/register", warehouseRegister);
@@ -57,7 +56,7 @@ warehouseRouter.delete("/api/warehouses", warehouseDelete);
 productRouter.post("/api/products/register", productRegister);
 productRouter.patch("/api/products", productUpdate);
 productRouter.get("/api/products", productList);
-productRouter.get("/api/products/:sku", productDetail);
+productRouter.get("/api/products/:productId", productDetail);
 productRouter.delete("/api/products", productDelete);
 
 //Logistic

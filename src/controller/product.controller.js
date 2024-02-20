@@ -29,7 +29,7 @@ const list = async (req,res, next) => {
 
 const detail = async (req, res, next) => {
     try {
-        const result = await productService.detail(req.user, { sku: req.params.sku });
+        const result = await productService.detail(req.user, { productId: req.params.productId} );
         res.status(200).json(result);
     } catch (error) {
         next(error);

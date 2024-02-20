@@ -12,13 +12,13 @@ datasource db {
 
 
 model companies {
-  companyCode String @id
+  companyId String @id
+  companyCode String 
   companyName String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   users users[]
   products products[]
-  stocks stocks[]
 }
 
 model users {
@@ -28,8 +28,8 @@ model users {
   email String
   fullName String
   userType UserType
-  companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: Restrict)
-  companyCode String?
+  companies companies? @relation(fields: [companyId], references: [companyId], onDelete: Restrict)
+  companyId String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   userPermissions userPermissions[]
@@ -61,7 +61,8 @@ enum permissionType {
 }
 
 model warehouses {
-  code String @id
+  warehouseId String @id
+  code String 
   name String 
   address String
   status status
@@ -76,11 +77,12 @@ enum status {
 }
 
 model products {
-  sku String @id
+  productId String @id
+  sku String 
   name String
   unit String
-  companyCode String?
-  companies companies? @relation(fields: [companyCode], references: [companyCode], onDelete: SetNull)
+  companyId String?
+  companies companies? @relation(fields: [companyId], references: [companyId], onDelete: SetNull)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   stocks stocks[]
@@ -96,13 +98,11 @@ model logistics {
 
 model stocks {
   stockId String @id
-  sku String
-  code String
-  companyCode String
+  productId String
+  warehouseId String
   stock Int
-  companies companies @relation(fields: [companyCode], references: [companyCode], onDelete: Restrict)
-  products products @relation(fields: [sku], references: [sku], onDelete: Restrict)
-  warehouses warehouses @relation(fields: [code], references: [code], onDelete: Restrict)
+  products products @relation(fields: [productId], references: [productId], onDelete: Restrict)
+  warehouses warehouses @relation(fields: [warehouseId], references: [warehouseId], onDelete: Restrict)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }

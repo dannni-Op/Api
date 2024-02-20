@@ -5,6 +5,7 @@ import { listProductValidation } from "../validation/product.validation.js";
 import { detailProductValidation } from "../validation/product.validation.js";
 import { registerProductValidation, updateProductValidation } from "../validation/product.validation.js"
 import { validate } from "../validation/validation.js";
+import { getId } from "./genereateId.service.js";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 
@@ -15,25 +16,27 @@ const register = async (userLogin, data) => {
 
     const countProduct = await prismaClient.products.count({
         where: {
-            OR: [
-                {
-                    sku: validationResult.sku,
-                },
-                {
-                    name: validationResult.name,
-                }
-            ]
+            sku: validationResult.sku,
         }
     })
 
-    if(countProduct === 1) throw new responseError(401, "SKU atau name product sudah terdaftar!");
+    if(countProduct === 1) throw new responseError(401, "SKU product sudah terdaftar!");
+
+    const checkName = await prismaClient.products.count({
+        where: {
+            name: validationResult.name,
+        }
+    })
+
+    if(checkName === 1) throw new responseError(401, "Product name sudah terdaftar!");
 
     const product = await prismaClient.products.create({
         data: {
+            productId: getId(),
             sku: validationResult.sku,
             name: validationResult.name,
             unit: validationResult.unit,
-            companyCode: validationResult.companyCode,
+            companyId: validationResult.companyId,
             createdAt: getUTCTime(new Date().toISOString()),
             updatedAt: getUTCTime(new Date().toISOString()),
         },
@@ -47,13 +50,33 @@ const update = async (userLogin, data) => {
 
     const isProductExist = await prismaClient.products.count({
         where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         }
     })
 
     if(isProductExist !== 1) throw new responseError(404, "Product tidak ditemukan!");
 
     const newData = {};
+    if(validationResult.sku){
+        const isSkuExist = await prismaClient.products.count({
+            where: {
+                AND: [
+                    {
+                        sku: validationResult.sku,
+                    },
+                    {
+                        NOT: {
+                            productId: validationResult.productId,
+                        }
+                    }
+                ]
+            }
+        });
+
+        if(isSkuExist === 1) throw new responseError(401, "SKU product sudah terpakai!");
+        newData.sku = validationResult.sku;
+    }
+    
     if(validationResult.name){
         const isNameExist = await prismaClient.products.count({
             where: {
@@ -63,7 +86,7 @@ const update = async (userLogin, data) => {
                     },
                     {
                         NOT: {
-                            sku: validationResult.sku,
+                            productId: validationResult.productId,
                         }
                     }
                 ]
@@ -75,11 +98,19 @@ const update = async (userLogin, data) => {
     }
 
     if(validationResult.unit) newData.unit = validationResult.unit;
-    if(validationResult.companyCode) newData.companyCode = validationResult.companyCode;
+    if(validationResult.companyId){
+        const isCompanyExist = await prismaClient.companies.findFirst({
+            where: {
+                companyId: validationResult.companyId,
+            }
+        })
+        if(!isCompanyExist) throw new responseError(404, "companyId tidak ada!");
+        newData.companyId = validationResult.companyId;
+    } 
 
     const product = await prismaClient.products.update({
         where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         },
         data: { ...newData, updatedAt: getUTCTime(new Date().toISOString()), }
     })
@@ -99,7 +130,7 @@ const list = async (userLogin, data) => {
 
     const isCompanyExist = await prismaClient.companies.findFirst({
         where: {
-            companyCode: validationResult.companyCode,
+            companyId: validationResult.companyId,
         }
     })
 
@@ -107,7 +138,7 @@ const list = async (userLogin, data) => {
     
     const result = await prismaClient.products.findMany({
         where:{
-            companyCode: validationResult.companyCode,
+            companyId: validationResult.companyId,
         }
     });
     if(result.length < 1) throw new responseError(404, "Products kosong!");
@@ -120,7 +151,7 @@ const detail = async (userLogin, data) => {
     const validationResult = validate(detailProductValidation, data);
     const product = await prismaClient.products.findFirst({
         where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         }
     });
 
@@ -134,7 +165,7 @@ const deleteProduct = async (userLogin, data) => {
 
     const isProductExist = await prismaClient.products.count({
         where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         }
     })
 
@@ -142,7 +173,7 @@ const deleteProduct = async (userLogin, data) => {
 
     const result = await prismaClient.products.delete({
         where: {
-            sku: validationResult.sku,
+            productId: validationResult.productId,
         }
     });
 

@@ -29,8 +29,7 @@ const list = async (req, res, next) => {
 
 const detail = async(req, res, next) => {
     try {
-        const warehouseIdTarget = req.params.warehouseId;
-        const result = await warehouseService.detail(req.user, warehouseIdTarget);
+        const result = await warehouseService.detail(req.user, req.params.warehouseId);
         res.status(200).json(result);
     } catch (error) {
         next(error);

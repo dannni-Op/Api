@@ -34,8 +34,7 @@ const list = async (req, res, next) => {
 
 const detail = async (req, res, next) => {
     try {
-        const companyCodeTarget = req.params.companyCode;
-        const result = await companyService.detail(req.user, companyCodeTarget);
+        const result = await companyService.detail(req.user, req.params.companyId);
         res.status(200).json(result);
     } catch (error) {
         next(error);
