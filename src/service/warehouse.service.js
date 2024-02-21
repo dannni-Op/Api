@@ -6,6 +6,7 @@ import { registerWarehousevalidation, updateWarehousevalidation, warehouseIdVali
 import { checkPermission } from "./permission.service.js";
 import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";
+import { createLog } from "./createLog.service.js";
 
 const register = async (userLogin, data) => {
 
@@ -41,6 +42,10 @@ const register = async (userLogin, data) => {
         },
     });
 
+    const log = await createLog("create", "/api/warehouses/register", JSON.stringify({
+        ...data,
+    }), 201, userLogin.userId);
+    
     return result;
 
 }
@@ -113,6 +118,10 @@ const update = async (userLogin, data) => {
         }
     });
 
+    const log = await createLog("update", "/api/warehouses", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+    
     return resultUpdate;
     
 }
@@ -121,6 +130,8 @@ const list = async (userLogin) => {
     const checkResult = await checkPermission(userLogin, "backOffice");
     const result = await prismaClient.warehouses.findMany();
     if(result.length < 1) throw new responseError(404, "Warehouses Kosong");
+
+    const log = await createLog("read", "/api/warehouses", null, 200, userLogin.userId);
     return result;
 }
 
@@ -134,7 +145,7 @@ const detail = async (userLogin, warehouseId ) => {
     });
 
     if(!warehouse) throw new responseError(404, "Warehouse tidak ditemukan!");
-
+    const log = await createLog("read", "/api/warehouses/"+warehouseId, null, 200, userLogin.userId);
     return warehouse;
 }
 
@@ -156,6 +167,10 @@ const deleteWarehouse = async (userLogin, data ) => {
         }
     });
 
+    const log = await createLog("delete", "/api/warehouses", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+    
     return {
         message: "Delete Success",
     }
