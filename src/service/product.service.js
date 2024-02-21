@@ -5,6 +5,7 @@ import { listProductValidation } from "../validation/product.validation.js";
 import { detailProductValidation } from "../validation/product.validation.js";
 import { registerProductValidation, updateProductValidation } from "../validation/product.validation.js"
 import { validate } from "../validation/validation.js";
+import { createLog } from "./createLog.service.js";
 import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { checkPermission } from "./permission.service.js";
@@ -43,6 +44,10 @@ const register = async (userLogin, data) => {
             updatedAt: getUTCTime(new Date().toISOString()),
         },
     })
+    
+    const log = await createLog("create", "/api/products/register", JSON.stringify({
+        ...data,
+    }), 201, userLogin.userId);
     
     return product;
 }
@@ -117,16 +122,22 @@ const update = async (userLogin, data) => {
         data: { ...newData, updatedAt: getUTCTime(new Date().toISOString()), }
     })
 
+    const log = await createLog("update", "/api/products", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+
     return product;
 }
 
 const list = async (userLogin, data) => {
     const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(listProductValidation, data);
+    const params = (validationResult.companyId) ? JSON.stringify({ ...data }) : null;
 
-    if(!validationResult.companyCode) {
+    if(!validationResult.companyId) {
         const result = await prismaClient.products.findMany();
         if(result.length < 1) throw new responseError(404, "Products kosong!");
+        const log = await createLog("read", "/api/products", params, 200, userLogin.userId);
         return result;
     }
 
@@ -144,13 +155,13 @@ const list = async (userLogin, data) => {
         }
     });
     if(result.length < 1) throw new responseError(404, "Products kosong!");
-
+    const log = await createLog("read", "/api/products", params, 200, userLogin.userId);
     return result;
 }
 
-const detail = async (userLogin, data) => {
+const detail = async (userLogin, productId) => {
     const checkResult = await checkPermission(userLogin, "backOffice");
-    const validationResult = validate(detailProductValidation, data);
+    const validationResult = validate(detailProductValidation, { productId, });
     const product = await prismaClient.products.findFirst({
         where: {
             productId: validationResult.productId,
@@ -158,6 +169,8 @@ const detail = async (userLogin, data) => {
     });
 
     if(!product) throw new responseError(404, "Product tidak ditemukan!");
+
+    const log = await createLog("read", "/api/products/"+productId, null, 200, userLogin.userId);
 
     return product;
 }
@@ -179,6 +192,10 @@ const deleteProduct = async (userLogin, data) => {
         }
     });
 
+    const log = await createLog("delete", "/api/products", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+    
     return {
         message: "Delete Success",
     }
