@@ -18,6 +18,14 @@ const register = async (userLogin, data) => {
 
     if(countCompanies === 1) throw new responseError(400, "Company code sudah ada!");
 
+    const checkName = await prismaClient.companies.count({
+        where:{
+            companyName: resultValidation.companyName,
+        } 
+    });
+
+    if(countCompanies === 1) throw new responseError(400, "Company name sudah ada!");
+
     const company = await prismaClient.companies.create({
         data: {
             companyId: getId(),
