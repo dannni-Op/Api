@@ -1,5 +1,5 @@
 import {detail, list, update, deleteUser as userDelete } from "../controller/user.constroller.js";
-import { detail as userPermissionDetail, list as userPermissionList, update as userPermissionUpdate } from "../controller/userPermission.controller.js";
+import { register as userPermissionRegister, detail as userPermissionDetail, list as userPermissionList, update as userPermissionUpdate } from "../controller/userPermission.controller.js";
 import {register as companyRegister, update as companyUpdate, list as companyList, detail as companyDetail, deleteCompany as companyDelete} from "../controller/company.controller.js";
 import {register as warehouseRegister, update as warehouseUpdate, list as warehouseList, detail as warehouseDetail, deleteWarehouse as warehouseDelete} from "../controller/warehouse.controller.js";
 import express from "express";
@@ -37,6 +37,7 @@ userRouter.delete("/api/users", userDelete);
 userPermissionRouter.get("/api/user-permissions/:userId", userPermissionDetail);
 userPermissionRouter.get("/api/user-permissions", userPermissionList);
 userPermissionRouter.patch("/api/user-permissions", userPermissionUpdate);
+userPermissionRouter.post("/api/user-permissions/register", userPermissionRegister);
 
 //company
 companyRouter.post("/api/companies/register", companyRegister);

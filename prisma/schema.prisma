@@ -127,8 +127,8 @@ model logs {
   requestId String
   action String
   endpoint String
-  params String?
+  params String? @db.Text
   status Int
-  userId String
+  userId String?
   logDate DateTime? @default(now()) @db.DateTime(0)
 }

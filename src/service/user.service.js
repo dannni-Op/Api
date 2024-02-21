@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 import { getId } from "./genereateId.service.js";
+import { createLog } from "./createLog.service.js";
 
 const register = async (data) => {
     const user = validate(registerUserValidation, data);
@@ -53,6 +54,11 @@ const register = async (data) => {
         }
     });
 
+    const log = await createLog("create", "/api/users/register", JSON.stringify({
+        ...data,
+        password: user.password,
+    }), 201, null);
+    
     return result ;
 }
 
@@ -85,7 +91,12 @@ const login = async (data) => {
         updatedAt: user.updatedAt,
     },process.env.ACCESS_TOKEN_SECRET,{
         expiresIn: "3h",
-    })
+    });
+
+    const log = await createLog("login", "/api/users/login", JSON.stringify({
+        ...data,
+        password: user.password,
+    }), 200, user.userId);
 
     return {
         data:{
@@ -120,6 +131,8 @@ const list = async (userLogin) => {
 
     if(users.length < 1) throw new responseError(404, "Users Kosong!");
 
+    const log = await createLog("read", "/api/users", null, 200, userLogin.userId);
+
     return users;
 }
 
@@ -128,13 +141,13 @@ const update = async (userLogin, data) => {
     // if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
 
-    const countUser = await prismaClient.users.count({
+    const checkUser = await prismaClient.users.findFirst({
         where:{
             userId: user.userId,
         }
     });
 
-    if(countUser !== 1) throw new responseError(404, "User tidak ditemukan!");
+    if(!checkUser) throw new responseError(404, "User tidak ditemukan!");
 
     const newData = {};
     if(user.username) {
@@ -204,6 +217,18 @@ const update = async (userLogin, data) => {
         }
     });
 
+    if(user.password){
+        const log = await createLog("update", "/api/users", JSON.stringify({
+            ...data,
+            password: newData.password,
+        }), 200, userLogin.userId);
+    }else{
+        const log = await createLog("update", "/api/users", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
+    
+    
     return result ;
 }
 
@@ -227,6 +252,8 @@ const detail = async (userLogin, userId) => {
 
     if(!user) throw new responseError(404, "User tidak ditemukan!"); 
 
+    const log = await createLog("read", "/api/users/"+userId, null, 200, userLogin.userId);
+    
     return {
         userId: user.userId,
         username: user.username,
@@ -268,6 +295,9 @@ const deleteUser = async (userLogin, data) => {
         }
     });
 
+    const log = await createLog("delete", "/api/users", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
 
     return {
         message: "Delete success",
