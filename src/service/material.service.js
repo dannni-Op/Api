@@ -2,6 +2,7 @@ import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { materialIdValidation, registerMaterialValidation, updateMaterialValidation } from "../validation/material.validation.js"
 import { validate } from "../validation/validation.js"
+import { createLog } from "./createLog.service.js";
 import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
@@ -28,12 +29,17 @@ const register = async (userLogin, data) => {
         }
     });
 
+    const log = await createLog("create", "/api/materials/register", JSON.stringify({
+        ...data,
+    }), 201, userLogin.userId);
+    
     return result;
 }
 
 const list = async (userLogin) => {
     const result = await prismaClient.materials.findMany();
     if(result.length < 1) throw new responseError(404, "List material kosong!");
+    const log = await createLog("read", "/api/materials", null, 200, userLogin.userId);
     return result;
 }
 
@@ -47,6 +53,9 @@ const detail = async (userLogin, materialId) => {
     });
 
     if(!result) throw new responseError(404, "Material tidak ditemukan!");
+
+    const log = await createLog("read", "/api/materials/"+materialId, null, 200, userLogin.userId);
+    
     return result;
 }
 
@@ -66,6 +75,10 @@ const deleteMaterial = async (userLogin, data) => {
             materialId: validationResult.materialId,
         }
     });
+
+    const log = await createLog("delete", "/api/materials", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
 
     return {
         "message": "Delete success",
@@ -116,6 +129,10 @@ const update = async (userLogin, data) => {
         }
     })
 
+    const log = await createLog("update", "/api/materials", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+    
     return result;
 }
 
