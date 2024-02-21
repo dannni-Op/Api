@@ -6,6 +6,7 @@ import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";
+import { createLog } from "./createLog.service.js";
 
 const register = async (userLogin, data) => {
     const resultValidation = validate(registerCompanyValidation, data);
@@ -35,11 +36,15 @@ const register = async (userLogin, data) => {
             updatedAt: getUTCTime(new Date().toISOString()),
         }
     });
+
+    const log = await createLog("create", "/api/companies/register", JSON.stringify({
+        ...data,
+    }), 201, userLogin.userId);
     
     return company;
 }
 
-const update = async (userIdLogin, data) => {
+const update = async (userLogin, data) => {
     const resultValidation = validate(updateCompanyValidation, data);
     
     const newData = {};
@@ -99,12 +104,18 @@ const update = async (userIdLogin, data) => {
         },
     });
 
+    const log = await createLog("update", "/api/companies", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+
     return result;
 }
 
-const list = async (userIdLogin) => {
+const list = async (userLogin, userIdLogin) => {
     const result = await prismaClient.companies.findMany();
     if(result.length < 1) throw new responseError(404, "Companies Kosong!");
+
+    const log = await createLog("read", "/api/companies", null, 200, userLogin.userId);
     return result;
 }
 
@@ -117,7 +128,8 @@ const detail = async (userLogin, companyId ) => {
     });
 1
     if(!result) throw new responseError(404, "Company tidak ditemukan!");
-    
+
+    const log = await createLog("read", "/api/companies/"+companyId, null,200, userLogin.userId);
     return result;
 }
 
@@ -137,6 +149,10 @@ const deleteCompany = async (userLogin, data) => {
             companyId: validationResult.companyId,
         }
     })
+
+    const log = await createLog("delete", "/api/companies", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
 
     return {
         message: "Delete Success",

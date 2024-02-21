@@ -121,3 +121,14 @@ model materials {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
 }
+
+model logs {
+  logId Int @id @default(autoincrement())
+  requestId String
+  action String
+  endpoint String
+  params String?
+  status Int
+  userId String
+  logDate DateTime? @default(now()) @db.DateTime(0)
+}

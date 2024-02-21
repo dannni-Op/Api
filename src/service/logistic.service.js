@@ -5,6 +5,7 @@ import { validate } from "../validation/validation.js";
 import { getUTCTime } from "./time.service.js";
 import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";
+import { createLog } from "./createLog.service.js";
 
 const register = async (userLogin, data) => {
     const validationResult = validate(registerLogisticValidation, data);
@@ -35,12 +36,18 @@ const register = async (userLogin, data) => {
         }
     })
 
+    const log = await createLog("create", "/api/logistics/register", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+
     return result;
 }
 
 const list = async (userLogin) => {
     const result = await prismaClient.logistics.findMany();
     if(result.length < 1) throw new responseError(404, "List  logistics kosong!");
+
+    const log = await createLog("read", "/api/logistics", null, 200, userLogin.userId);
     return result;
 }
 
@@ -54,6 +61,8 @@ const detail = async (userLogin, logisticId ) => {
     });
 
     if(!result) throw new responseError(404, "Logistic tidak ditemukan!");
+
+    const log = await createLog("read", "/api/logistics/"+logisticId, null, 200, userLogin.userId);
 
     return result;
 }
@@ -122,6 +131,10 @@ const update = async (userLogin, data) => {
         }
     })
 
+    const log = await createLog("update", "/api/logistics", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
+
     return result;
 }
 
@@ -141,6 +154,10 @@ const deleteLogistic = async (userLogin, data) => {
             logisticId: validationResult.logisticId,
         }
     });
+
+    const log = await createLog("delete", "/api/logistics", JSON.stringify({
+        ...data,
+    }), 200, userLogin.userId);
 
     return {
         message: "Delete Success",
