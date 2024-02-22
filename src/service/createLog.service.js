@@ -1,6 +1,7 @@
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
 import { getId } from "./genereateId.service.js";
+import { getUTCTime } from "./time.service.js";
 
 const createLog = async function(action, endpoint, params, status, userId){
     const result = await prismaClient.logs.create({
@@ -11,6 +12,7 @@ const createLog = async function(action, endpoint, params, status, userId){
             params,
             status,
             userId,
+            logDate: getUTCTime(),
         }
     });
 

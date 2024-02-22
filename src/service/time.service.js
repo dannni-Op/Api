@@ -1,11 +1,16 @@
-export const getUTCTime = (dateTimeString) => {
-    const dt = new Date(dateTimeString);
-    const dtNumber = dt.getTime();
-    const dtOffset = dt.getTimezoneOffset() * 60000;
-    const dtUTC = new Date();
-    dtUTC.setTime(dtNumber - dtOffset);
+export const getUTCTime = () => {
+    // const dt = new Date(dateTimeString);
+    // const dtNumber = dt.getTime();
+    // const dtOffset = dt.getTimezoneOffset() * 60000;
+    // const dtUTC = new Date();
+    // dtUTC.setTime(dtNumber - dtOffset);
 
-    return dtUTC;
+    // return dtUTC;
+    //////////////////////////
+
+    const abc = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta"} );
+    const result = new Date(abc);
+    return result;
 }
 
 
