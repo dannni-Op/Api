@@ -32,8 +32,8 @@ const register = async (userLogin, data) => {
             companyId: getId(),
             ...resultValidation,
             createdBy: await createdBy(userLogin.userId),
-            createdAt: getUTCTime(new Date().toISOString()),
-            updatedAt: getUTCTime(new Date().toISOString()),
+            createdAt: getUTCTime(),
+            updatedAt: getUTCTime(),
         }
     });
 
@@ -100,7 +100,7 @@ const update = async (userLogin, data) => {
         },
         data: {
             ...newData,
-            updatedAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(),
         },
     });
 

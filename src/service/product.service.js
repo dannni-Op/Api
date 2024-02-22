@@ -40,8 +40,8 @@ const register = async (userLogin, data) => {
             unit: validationResult.unit,
             companyId: validationResult.companyId,
             createdBy: await createdBy(userLogin.userId),
-            createdAt: getUTCTime(new Date().toISOString()),
-            updatedAt: getUTCTime(new Date().toISOString()),
+            createdAt: getUTCTime(),
+            updatedAt: getUTCTime(),
         },
     })
     
@@ -119,7 +119,7 @@ const update = async (userLogin, data) => {
         where: {
             productId: validationResult.productId,
         },
-        data: { ...newData, updatedAt: getUTCTime(new Date().toISOString()), }
+        data: { ...newData, updatedAt: getUTCTime(), }
     })
 
     const log = await createLog("update", "/api/products", JSON.stringify({

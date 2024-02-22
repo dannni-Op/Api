@@ -31,8 +31,8 @@ const register = async (userLogin, data) => {
             logisticId: getId(),
             ...validationResult,
             createdBy: await createdBy(userLogin.userId),
-            createdAt: getUTCTime(new Date().toISOString()),
-            updatedAt: getUTCTime(new Date().toISOString()),
+            createdAt: getUTCTime(),
+            updatedAt: getUTCTime(),
         }
     })
 
@@ -119,7 +119,7 @@ const update = async (userLogin, data) => {
     }
 
     if(validationResult.service) newData.service = validationResult.service;
-    newData.updatedAt = getUTCTime(new Date().toISOString());
+    newData.updatedAt = getUTCTime();
 
     const result = await prismaClient.logistics.update({
         where: {
@@ -127,7 +127,7 @@ const update = async (userLogin, data) => {
         },
         data: {
             ...newData,
-            updatedAt: getUTCTime(new Date().toISOString())
+            updatedAt: getUTCTime()
         }
     })
 

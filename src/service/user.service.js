@@ -39,8 +39,8 @@ const register = async (data) => {
             fullName: user.fullName,
             userType: user.userType,
             companyId: user.companyId,
-            createdAt: getUTCTime(new Date().toISOString()),
-            updatedAt: getUTCTime(new Date().toISOString()),
+            createdAt: getUTCTime(),
+            updatedAt: getUTCTime(),
         },
         select:{
             userId: true,
@@ -203,7 +203,7 @@ const update = async (userLogin, data) => {
         },
         data: {
             ...newData,
-            updatedAt: getUTCTime(new Date().toISOString()),
+            updatedAt: getUTCTime(),
         },
         select: {
             userId: true,

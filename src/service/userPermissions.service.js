@@ -23,8 +23,8 @@ const register = async (userLogin, data) => {
             permissionId: getId(),
             userId: validationResult.userId,
             permissionType: validationResult.permissionType ? validationResult.permissionType : null,
-            createdAt: getUTCTime(new Date().toISOString()),
-            updatedAt: getUTCTime(new Date().toISOString()),
+            createdAt: getUTCTime(),
+            updatedAt: getUTCTime(),
         }
     });
 
@@ -70,7 +70,7 @@ const update = async (userLogin, data) => {
     
     const newData = {};
     if(validationResult.permissionType) newData.permissionType = validationResult.permissionType === "null" ? null : validationResult.permissionType;
-    newData.updatedAt = getUTCTime(new Date().toISOString());
+    newData.updatedAt = getUTCTime();
 
     const result = await prismaClient.userPermissions.update({
         where: {
