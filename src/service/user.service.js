@@ -232,7 +232,7 @@ const update = async (userLogin, data) => {
     return result ;
 }
 
-const detail = async (userLogin, userId) => {
+const detail = async (userLogin, userId, log = true) => {
 
     const user = await prismaClient.users.findFirst({
         where:{
@@ -252,7 +252,9 @@ const detail = async (userLogin, userId) => {
 
     if(!user) throw new responseError(404, "User tidak ditemukan!"); 
 
-    const log = await createLog("read", "/api/users/"+userId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/users/"+userId, null, 200, userLogin.userId);
+    }
     
     return {
         userId: user.userId,

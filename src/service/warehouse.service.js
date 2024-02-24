@@ -136,11 +136,11 @@ const list = async (userLogin) => {
 }
 
 const detail = async (userLogin, warehouseId ) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
+    //const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(warehouseIdValidation, { warehouseId, });
     const warehouse = await prismaClient.warehouses.findFirst({
         where: {
-            code: resultValidation.id,
+            warehouseId: resultValidation.warehouseId,
         }
     });
 

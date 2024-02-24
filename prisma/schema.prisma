@@ -20,6 +20,7 @@ model companies {
   updatedAt  DateTime   @default(now())
   users users[]
   products products[]
+  inbounds inbounds[]
 }
 
 model users {
@@ -71,6 +72,7 @@ model warehouses {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
   stocks stocks[]
+  inbounds inbounds[]
 }
 
 enum status {
@@ -131,4 +133,28 @@ model logs {
   status Int
   userId String?
   logDate DateTime? @default(now()) @db.DateTime(0)
+}
+
+model inbounds {
+  inboundId String @id 
+  companyId String
+  warehouseId String
+  transactionDate DateTime @default(now()) 
+  dueDate DateTime @default(now()) 
+  approvedDate DateTime?
+  inboundCode String
+  description String? @db.Text
+  status statusInbound
+  sku String
+  quantity Int
+  warehouses warehouses @relation(fields: [warehouseId], references: [warehouseId], onDelete: Restrict)
+  companies companies @relation(fields: [companyId], references: [companyId], onDelete: Restrict)
+}
+
+enum statusInbound {
+  pending
+  send
+  received
+  done
+  cancelled
 }

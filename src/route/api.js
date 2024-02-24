@@ -9,6 +9,7 @@ import { register as logisticRegistert, list as logisticList, detail as logistic
 import { deleteStock as stockDelete, register as stockRegister, list as stockList, update as stockUpdate, detail as stockDetail } from "../controller/stock.controller.js";
 import { register as materialRegister, list as materialList, detail as materialDetail, deleteMaterial as materialDelete, update as materialUpdate } from "../controller/material.controller.js";
 import { list as logList, detail as logDetail, } from "../controller/log.controller.js";
+import { deleteInbound as inboundDelete, update as inboundUpdate, create as inboundCreate, list as inboundList, detail as inboundDetail } from "../controller/inbound.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
@@ -19,6 +20,7 @@ const stockRouter = new express.Router();
 const userPermissionRouter = new express.Router();
 const materialRouter = new express.Router();
 const logRouter = new express.Router();
+const inboundRouter = new express.Router();
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
@@ -29,6 +31,7 @@ stockRouter.use(authMiddleware);
 userPermissionRouter.use(authMiddleware);
 materialRouter.use(authMiddleware);
 logRouter.use(authMiddleware);
+inboundRouter.use(authMiddleware);
 
 //user
 userRouter.patch("/api/users", update);
@@ -88,6 +91,12 @@ materialRouter.patch("/api/materials", materialUpdate);
 logRouter.get("/api/logs/:logId", logDetail);
 logRouter.get("/api/logs", logList);
 
+inboundRouter.post("/api/inbounds/create", inboundCreate);
+inboundRouter.get("/api/inbounds", inboundList);
+inboundRouter.get("/api/inbounds/:inboundId", inboundDetail);
+inboundRouter.patch("/api/inbounds", inboundUpdate);
+inboundRouter.delete("/api/inbounds", inboundDelete);
+
 export {
     userRouter,
     companyRouter,
@@ -98,4 +107,5 @@ export {
     userPermissionRouter,
     materialRouter,
     logRouter,
+    inboundRouter,
 }
