@@ -12,7 +12,7 @@ import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 
 
-const register = async (userLogin, data) => {
+const register = async (userLogin, data, log = true) => {
     
     const validationResult = validate(registerProductValidation, data);
 
@@ -45,14 +45,16 @@ const register = async (userLogin, data) => {
         },
     })
     
-    const log = await createLog("create", "/api/products/register", JSON.stringify({
-        ...data,
-    }), 201, userLogin.userId);
+    if(log){
+        const log = await createLog("create", "/api/products/register", JSON.stringify({
+            ...data,
+        }), 201, userLogin.userId);
+    }
     
     return product;
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateProductValidation, data);
 
     const isProductExist = await prismaClient.products.count({
@@ -122,14 +124,16 @@ const update = async (userLogin, data) => {
         data: { ...newData, updatedAt: getUTCTime(), }
     })
 
-    const log = await createLog("update", "/api/products", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("update", "/api/products", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return product;
 }
 
-const list = async (userLogin, data) => {
+const list = async (userLogin, data, log = true) => {
     const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(listProductValidation, data);
     const params = (validationResult.companyId) ? JSON.stringify({ ...data }) : null;
@@ -155,11 +159,13 @@ const list = async (userLogin, data) => {
         }
     });
     if(result.length < 1) throw new responseError(404, "Products kosong!");
-    const log = await createLog("read", "/api/products", params, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/products", params, 200, userLogin.userId);
+    }
     return result;
 }
 
-const detail = async (userLogin, productId) => {
+const detail = async (userLogin, productId, log = true) => {
     const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(detailProductValidation, { productId, });
     const product = await prismaClient.products.findFirst({
@@ -170,12 +176,14 @@ const detail = async (userLogin, productId) => {
 
     if(!product) throw new responseError(404, "Product tidak ditemukan!");
 
-    const log = await createLog("read", "/api/products/"+productId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/products/"+productId, null, 200, userLogin.userId);
+    }
 
     return product;
 }
 
-const deleteProduct = async (userLogin, data) => {
+const deleteProduct = async (userLogin, data, log = true) => {
     const validationResult = validate(deleteProductValidation, data);
 
     const isProductExist = await prismaClient.products.count({
@@ -192,9 +200,11 @@ const deleteProduct = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("delete", "/api/products", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("delete", "/api/products", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
     
     return {
         message: "Delete Success",

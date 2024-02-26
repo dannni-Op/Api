@@ -7,7 +7,7 @@ import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";
 import { createLog } from "./createLog.service.js";
 
-const register = async (userLogin, data) => {
+const register = async (userLogin, data, log = true) => {
     const validationResult = validate(registerLogisticValidation, data);
 
     const isLogisticExist = await prismaClient.logistics.count({
@@ -36,22 +36,26 @@ const register = async (userLogin, data) => {
         }
     })
 
-    const log = await createLog("create", "/api/logistics/register", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("create", "/api/logistics/register", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return result;
 }
 
-const list = async (userLogin) => {
+const list = async (userLogin, log = true) => {
     const result = await prismaClient.logistics.findMany();
     if(result.length < 1) throw new responseError(404, "List  logistics kosong!");
 
-    const log = await createLog("read", "/api/logistics", null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/logistics", null, 200, userLogin.userId);
+    }
     return result;
 }
 
-const detail = async (userLogin, logisticId ) => {
+const detail = async (userLogin, logisticId, log = true ) => {
     const validationResult = validate(logisticIdValidation, { logisticId,} );
 
     const result = await prismaClient.logistics.findFirst({
@@ -62,12 +66,14 @@ const detail = async (userLogin, logisticId ) => {
 
     if(!result) throw new responseError(404, "Logistic tidak ditemukan!");
 
-    const log = await createLog("read", "/api/logistics/"+logisticId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/logistics/"+logisticId, null, 200, userLogin.userId);
+    }
 
     return result;
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateLogisticValidation, data);
 
     const isLogisticExist = await prismaClient.logistics.count({
@@ -131,14 +137,16 @@ const update = async (userLogin, data) => {
         }
     })
 
-    const log = await createLog("update", "/api/logistics", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("update", "/api/logistics", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return result;
 }
 
-const deleteLogistic = async (userLogin, data) => {
+const deleteLogistic = async (userLogin, data, log = true) => {
     const validationResult = validate(logisticIdValidation, data );
 
     const check = await prismaClient.logistics.findFirst({
@@ -155,14 +163,15 @@ const deleteLogistic = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("delete", "/api/logistics", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("delete", "/api/logistics", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return {
         message: "Delete Success",
     }
-
 }
 
 export default {

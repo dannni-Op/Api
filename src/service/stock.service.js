@@ -7,7 +7,7 @@ import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
 
-const register = async (userLogin, data) => {
+const register = async (userLogin, data, log = true) => {
     const validationResult = validate(registerStockValidation, data);
 
     const isProductExist = await prismaClient.products.findFirst({
@@ -51,21 +51,25 @@ const register = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("create", "/api/stocks/register", JSON.stringify({
-        ...data,
-    }), 201, userLogin.userId);
+    if(log){
+        const log = await createLog("create", "/api/stocks/register", JSON.stringify({
+            ...data,
+        }), 201, userLogin.userId);
+    }
     
     return result;
 }
 
-const list = async (userLogin) => {
+const list = async (userLogin, log = true) => {
     const result = await prismaClient.stocks.findMany();
     if(result.length < 1) throw new responseError(404, "Product stock kosong!");
-    const log = await createLog("read", "/api/stocks", null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/stocks", null, 200, userLogin.userId);
+    }
     return result;
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateStockValidation, data);
 
     const stock = await prismaClient.stocks.findFirst({
@@ -128,14 +132,16 @@ const update = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("update", "/api/stocks", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("update", "/api/stocks", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return result;
 }
 
-const detail = async (userLogin, stockId) => {
+const detail = async (userLogin, stockId, log = true) => {
     const validationResult = validate(stockIdValidation, { stockId, })
 
     const result = await prismaClient.stocks.findFirst({
@@ -146,13 +152,15 @@ const detail = async (userLogin, stockId) => {
 
     if(!result) throw new responseError(404, "Product stock tidak ditemukan!");
 
-    const log = await createLog("read", "/api/stocks/"+stockId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/stocks/"+stockId, null, 200, userLogin.userId);
+    }
 
     return result;
 }
 
 
-const deleteStock = async (userLogin, data) => {
+const deleteStock = async (userLogin, data, log = true) => {
     const validationResult = validate(stockIdValidation, data );
     const result = await prismaClient.stocks.count({
         where: {
@@ -168,9 +176,11 @@ const deleteStock = async (userLogin, data) => {
         }
     })
 
-    const log = await createLog("delete", "/api/stocks", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("delete", "/api/stocks", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return {
         "message": "Delete success",

@@ -18,8 +18,6 @@ const create = async (userLogin, data) => {
 
     const isWarehouseExist = await warehouseService.detail(userLogin, validationResult.warehouseId, false);
 
-    if(!isWarehouseExist) throw new responseError(404, "Warehouse tidak ditemukan!");
-
     const isProductExist = await prismaClient.products.findFirst({
         where: {
             sku: validationResult.sku,
@@ -100,6 +98,27 @@ const update = async (userLogin, data) => {
     }
 
     //jika sku ada (work in proggress)
+    if(validationResult.sku){
+        const product = await prismaClient.products.findFirst({
+            where: {
+                AND: [
+                    {
+                        sku: validationResult.sku,
+                    },
+                    {
+                        companyId: inboundCheck.companyId,
+                    }
+                ]
+            }
+        });
+        if(!product) throw new responseError(404, "Product tidak ditemukan!")
+
+        newData.sku = validationResult.sku;
+        newData.inboundCode = inboundCheck.inboundCode.replace(inboundCheck.sku, validationResult.sku);
+        console.log(inboundCheck.sku);
+        console.log(validationResult.sku);
+        console.log(newData.inboundCode);
+    }
 
     if(validationResult.description) newData.description = validationResult.description;
 

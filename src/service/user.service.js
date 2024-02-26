@@ -9,7 +9,7 @@ import { getUTCTime } from "./time.service.js";
 import { getId } from "./genereateId.service.js";
 import { createLog } from "./createLog.service.js";
 
-const register = async (data) => {
+const register = async (data, log = true) => {
     const user = validate(registerUserValidation, data);
     const countUser = await prismaClient.users.count({
         where:{
@@ -54,15 +54,17 @@ const register = async (data) => {
         }
     });
 
-    const log = await createLog("create", "/api/users/register", JSON.stringify({
-        ...data,
-        password: user.password,
-    }), 201, null);
+    if(log){
+        const log = await createLog("create", "/api/users/register", JSON.stringify({
+            ...data,
+            password: user.password,
+        }), 201, null);
+    }
     
     return result ;
 }
 
-const login = async (data) => {
+const login = async (data, log = true) => {
     const resultValidation = validate(loginUserValidation, data);
     
     const user = await prismaClient.users.findFirst({
@@ -93,10 +95,12 @@ const login = async (data) => {
         expiresIn: "3h",
     });
 
-    const log = await createLog("login", "/api/users/login", JSON.stringify({
-        ...data,
-        password: user.password,
-    }), 200, user.userId);
+    if(log){
+        const log = await createLog("login", "/api/users/login", JSON.stringify({
+            ...data,
+            password: user.password,
+        }), 200, user.userId);
+    }
 
     return {
         data:{
@@ -114,7 +118,7 @@ const login = async (data) => {
 
 }
 
-const list = async (userLogin) => {
+const list = async (userLogin, log = true) => {
 
     const users = await prismaClient.users.findMany({
         select: {
@@ -131,12 +135,14 @@ const list = async (userLogin) => {
 
     if(users.length < 1) throw new responseError(404, "Users Kosong!");
 
-    const log = await createLog("read", "/api/users", null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/users", null, 200, userLogin.userId);
+    }
 
     return users;
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     // const resultPermission = await checkPermission(userLogin);
     // if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
@@ -217,15 +223,17 @@ const update = async (userLogin, data) => {
         }
     });
 
-    if(user.password){
-        const log = await createLog("update", "/api/users", JSON.stringify({
-            ...data,
-            password: newData.password,
-        }), 200, userLogin.userId);
-    }else{
-        const log = await createLog("update", "/api/users", JSON.stringify({
-            ...data,
-        }), 200, userLogin.userId);
+    if(log){
+        if(user.password){
+            const log = await createLog("update", "/api/users", JSON.stringify({
+                ...data,
+                password: newData.password,
+            }), 200, userLogin.userId);
+        }else{
+            const log = await createLog("update", "/api/users", JSON.stringify({
+                ...data,
+            }), 200, userLogin.userId);
+        }
     }
     
     
@@ -268,7 +276,7 @@ const detail = async (userLogin, userId, log = true) => {
     };
 }
 
-const deleteUser = async (userLogin, data) => {
+const deleteUser = async (userLogin, data, log = true) => {
     const validationResult = validate(idUserValidation, data);
 
     const isUserExist = await prismaClient.users.findFirst({
@@ -297,9 +305,11 @@ const deleteUser = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("delete", "/api/users", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("delete", "/api/users", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return {
         message: "Delete success",

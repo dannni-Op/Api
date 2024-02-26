@@ -7,7 +7,7 @@ import { createLog } from "./createLog.service.js";
 import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
 
-const register = async (userLogin, data) => {
+const register = async (userLogin, data, log = true) => {
     const validationResult = validate(registerUserPermissionValidation, data);
 
     const isUserExist = await prismaClient.userPermissions.count({
@@ -28,13 +28,16 @@ const register = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("create", "/api/user-permissions", JSON.stringify({
-        ...data,
-    }), 201, userLogin.userId);
+    if(log){
+        const log = await createLog("create", "/api/user-permissions", JSON.stringify({
+            ...data,
+        }), 201, userLogin.userId);
+    }
+    
     return result;
 }
 
-const detail = async (userLogin, userId) => {
+const detail = async (userLogin, userId, log = true) => {
     const validationResult = validate(idUserValidation, { userId, });
 
     const isUserPermissionExist = await prismaClient.userPermissions.findFirst({
@@ -45,19 +48,23 @@ const detail = async (userLogin, userId) => {
 
     if(!isUserPermissionExist) throw new responseError(404, "User permission tidak ditemukan!");
 
-    const log = await createLog("read", "/api/user-permissions/"+userId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/user-permissions/"+userId, null, 200, userLogin.userId);
+    }
 
     return isUserPermissionExist;
 }
 
-const list = async (userLogin) => {
+const list = async (userLogin, log = true) => {
     const result = await prismaClient.userPermissions.findMany();
     if(result.length < 1) throw new responseError(404, "User Permissions kosong!");
-    const log = await createLog("read", "/api/user-permissions", null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/user-permissions", null, 200, userLogin.userId);
+    }
     return result;
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateUserPermissionValidation, data);
 
     const userPermission = await prismaClient.userPermissions.findFirst({
@@ -79,9 +86,11 @@ const update = async (userLogin, data) => {
         data: newData,
     });
 
-    const log = await createLog("update", "/api/user-permissions", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("update", "/api/user-permissions", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return result;
 }

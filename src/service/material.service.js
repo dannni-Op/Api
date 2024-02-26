@@ -7,7 +7,7 @@ import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
 
-const register = async (userLogin, data) => {
+const register = async (userLogin, data, log = true) => {
     const validationResult = validate(registerMaterialValidation, data);
 
     console.log(validationResult);
@@ -29,21 +29,25 @@ const register = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("create", "/api/materials/register", JSON.stringify({
-        ...data,
-    }), 201, userLogin.userId);
+    if(log){
+        const log = await createLog("create", "/api/materials/register", JSON.stringify({
+            ...data,
+        }), 201, userLogin.userId);
+    }
     
     return result;
 }
 
-const list = async (userLogin) => {
+const list = async (userLogin, log = true) => {
     const result = await prismaClient.materials.findMany();
     if(result.length < 1) throw new responseError(404, "List material kosong!");
-    const log = await createLog("read", "/api/materials", null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/materials", null, 200, userLogin.userId);
+    }
     return result;
 }
 
-const detail = async (userLogin, materialId) => {
+const detail = async (userLogin, materialId, log = true) => {
     const validationResult = validate(materialIdValidation, { materialId, });
 
     const result = await prismaClient.materials.findFirst({
@@ -54,12 +58,14 @@ const detail = async (userLogin, materialId) => {
 
     if(!result) throw new responseError(404, "Material tidak ditemukan!");
 
-    const log = await createLog("read", "/api/materials/"+materialId, null, 200, userLogin.userId);
+    if(log){
+        const log = await createLog("read", "/api/materials/"+materialId, null, 200, userLogin.userId);
+    }
     
     return result;
 }
 
-const deleteMaterial = async (userLogin, data) => {
+const deleteMaterial = async (userLogin, data, log = true) => {
     const validationResult = validate(materialIdValidation, data);
 
     const isMaterialExist = await prismaClient.materials.findFirst({
@@ -76,16 +82,18 @@ const deleteMaterial = async (userLogin, data) => {
         }
     });
 
-    const log = await createLog("delete", "/api/materials", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("delete", "/api/materials", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
 
     return {
         "message": "Delete success",
     }
 }
 
-const update = async (userLogin, data) => {
+const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateMaterialValidation, data);
 
     const isMaterialExist = await prismaClient.materials.findFirst({
@@ -129,9 +137,11 @@ const update = async (userLogin, data) => {
         }
     })
 
-    const log = await createLog("update", "/api/materials", JSON.stringify({
-        ...data,
-    }), 200, userLogin.userId);
+    if(log){
+        const log = await createLog("update", "/api/materials", JSON.stringify({
+            ...data,
+        }), 200, userLogin.userId);
+    }
     
     return result;
 }
