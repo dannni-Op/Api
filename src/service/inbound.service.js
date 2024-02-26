@@ -124,6 +124,7 @@ const update = async (userLogin, data) => {
 
     if(validationResult.quantity) newData.quantity = validationResult.quantity;
 
+    //handle konsisi jika request status = done
     if(validationResult.status) newData.status = validationResult.status;
 
     const result = await prismaClient.inbounds.update({
