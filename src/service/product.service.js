@@ -31,6 +31,14 @@ const register = async (userLogin, data, log = true) => {
 
     if(checkName === 1) throw new responseError(401, "Product name sudah terdaftar!");
 
+    const company = await prismaClient.companies.findFirst({
+        where: {
+            companyId: validationResult.companyId,
+        }
+    })
+
+    if(!company) throw new responseError(404, "Company tidak ditemukan!")
+
     const product = await prismaClient.products.create({
         data: {
             productId: getId(),
@@ -111,7 +119,7 @@ const update = async (userLogin, data, log = true) => {
                 companyId: validationResult.companyId,
             }
         })
-        if(!isCompanyExist) throw new responseError(404, "companyId tidak ada!");
+        if(!isCompanyExist) throw new responseError(404, "companyId tidak ditemukan!");
         newData.companyId = validationResult.companyId;
     } 
 

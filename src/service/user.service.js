@@ -29,6 +29,16 @@ const register = async (data, log = true) => {
 
     user.password = await bcrypt.hash(user.password, 10);
 
+    if(user.companyId){
+        const company = await prismaClient.companies.findFirst({
+            where: {
+                companyId: user.companyId,
+            }
+        })
+
+        if(!company) throw new responseError(404, "Company tidak ditemukan!")
+    }
+
     const uuid = getId();
     const result = await prismaClient.users.create({
         data: {
@@ -143,8 +153,6 @@ const list = async (userLogin, log = true) => {
 }
 
 const update = async (userLogin, data, log = true) => {
-    // const resultPermission = await checkPermission(userLogin);
-    // if(!resultPermission) throw new responseError(401, "Akses ditolak");
     const user = validate(updateUserValidation, data);
 
     const checkUser = await prismaClient.users.findFirst({
@@ -200,7 +208,18 @@ const update = async (userLogin, data, log = true) => {
     if(user.fullName) newData.fullName = user.fullName; 
     if(user.userType) newData.userType = user.userType; 
     if(user.companyId) {
-        (user.companyCode === "null") ? newData.companyId = null : newData.companyId = user.companyId; 
+        if(user.companyCode === "null"){
+            newData.companyId = null;
+        }else{
+            const company = await prismaClient.companies.findFirst({
+                where: {
+                    companyId: user.companyId,
+                }
+            })
+            if(!company) throw new responseError(404, "Company tidak ditemukan!")
+            newData.companyId = user.companyId;
+        } 
+            
     }
 
     const result = await prismaClient.users.update({

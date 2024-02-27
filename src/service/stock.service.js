@@ -8,6 +8,7 @@ import { getId } from "./genereateId.service.js";
 import { getUTCTime } from "./time.service.js";
 
 const register = async (userLogin, data, log = true) => {
+
     const validationResult = validate(registerStockValidation, data);
 
     const isProductExist = await prismaClient.products.findFirst({
@@ -101,12 +102,15 @@ const update = async (userLogin, data, log = true) => {
     const newData = {};
 
     if(validationResult.productId){
-        const result = await prismaClient.products.findFirst({ where: {
-            productId: validationResult.productId,
-        } });
-        if(!result) throw new responseError(404, "Product tidak ada!");
+      const result = await prismaClient.products.findFirst({
+        where: {
+          productId: validationResult.productId,
+        },
+      });
 
-        newData.productId = validationResult.productId;
+      if (!result) throw new responseError(404, "Product tidak ada!");
+
+      newData.productId = validationResult.productId;
     }
 
     if(validationResult.warehouseId){

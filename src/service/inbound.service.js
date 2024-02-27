@@ -13,7 +13,7 @@ const create = async (userLogin, data) => {
 
     const user = await userService.detail(userLogin, userLogin.userId, false);
 
-    // validasi sementara jika user code tidak ada akan error
+    // validasi sementara jika user companyId tidak ada akan error
     if(!user.companyId) throw new responseError(404, "Anda BackUser");
 
     const isWarehouseExist = await warehouseService.detail(userLogin, validationResult.warehouseId, false);
@@ -97,34 +97,31 @@ const update = async (userLogin, data) => {
         newData.warehouseId = validationResult.warehouseId;
     }
 
-    //jika sku ada (work in proggress)
+    //jika sku ada 
     if(validationResult.sku){
-        const product = await prismaClient.products.findFirst({
-            where: {
-                AND: [
-                    {
-                        sku: validationResult.sku,
-                    },
-                    {
-                        companyId: inboundCheck.companyId,
-                    }
-                ]
-            }
-        });
+            const product = await prismaClient.products.findFirst({
+                where: {
+                    AND: [
+                        {
+                            sku: validationResult.sku,
+                        },
+                        {
+                            companyId: inboundCheck.companyId,
+                        }
+                    ]
+                }
+            });
         if(!product) throw new responseError(404, "Product tidak ditemukan!")
 
         newData.sku = validationResult.sku;
         newData.inboundCode = inboundCheck.inboundCode.replace(inboundCheck.sku, validationResult.sku);
-        console.log(inboundCheck.sku);
-        console.log(validationResult.sku);
-        console.log(newData.inboundCode);
     }
 
     if(validationResult.description) newData.description = validationResult.description;
 
     if(validationResult.quantity) newData.quantity = validationResult.quantity;
 
-    //handle konsisi jika request status = done
+    //handle kondisi jika request status = done
     if(validationResult.status) newData.status = validationResult.status;
 
     const result = await prismaClient.inbounds.update({

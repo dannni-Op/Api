@@ -10,6 +10,14 @@ import { getUTCTime } from "./time.service.js";
 const register = async (userLogin, data, log = true) => {
     const validationResult = validate(registerUserPermissionValidation, data);
 
+    const user = await prismaClient.users.findFirst({
+        where: {
+            userId: validationResult.userId,
+        }
+    })
+
+    if(!user) throw new responseError(404, "User tidak ditemukan!");
+
     const isUserExist = await prismaClient.userPermissions.count({
         where: {
             userId: validationResult.userId,
