@@ -3,14 +3,12 @@ import { responseError } from "../error/response.error.js";
 import { validate } from "../validation/validation.js";
 import { getUTCTime } from "./time.service.js";
 import { registerWarehousevalidation, updateWarehousevalidation, warehouseIdValidation } from "../validation/warehouse.validation.js";
-import { checkPermission } from "./permission.service.js";
 import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";
 import { createLog } from "./createLog.service.js";
 
 const register = async (userLogin, data, log = true) => {
 
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(registerWarehousevalidation, data);
 
     const warehouse = await prismaClient.warehouses.count({
@@ -53,7 +51,6 @@ const register = async (userLogin, data, log = true) => {
 }
 
 const update = async (userLogin, data, log = true) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(updateWarehousevalidation, data);
     
     const isWarehouseExist = await prismaClient.warehouses.count({
@@ -131,7 +128,6 @@ const update = async (userLogin, data, log = true) => {
 }
 
 const list = async (userLogin, log = true) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const result = await prismaClient.warehouses.findMany();
     if(result.length < 1) throw new responseError(404, "Warehouses Kosong");
 
@@ -142,7 +138,6 @@ const list = async (userLogin, log = true) => {
 }
 
 const detail = async (userLogin, warehouseId, log = true ) => {
-    //const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(warehouseIdValidation, { warehouseId, });
     const warehouse = await prismaClient.warehouses.findFirst({
         where: {
@@ -158,7 +153,6 @@ const detail = async (userLogin, warehouseId, log = true ) => {
 }
 
 const deleteWarehouse = async (userLogin, data, log = true ) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const resultValidation = validate(warehouseIdValidation, data);
     
     const countWarehouse = await prismaClient.warehouses.count({

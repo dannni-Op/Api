@@ -2,7 +2,6 @@ import { companyIdValidation, registerCompanyValidation, updateCompanyValidation
 import { validate } from "../validation/validation.js"
 import { prismaClient } from "../app/db.js";
 import { responseError } from "../error/response.error.js";
-import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 import { getId } from "./genereateId.service.js";
 import { createdBy } from "./created.service.js";

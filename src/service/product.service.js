@@ -8,7 +8,6 @@ import { validate } from "../validation/validation.js";
 import { createLog } from "./createLog.service.js";
 import { createdBy } from "./created.service.js";
 import { getId } from "./genereateId.service.js";
-import { checkPermission } from "./permission.service.js";
 import { getUTCTime } from "./time.service.js";
 
 
@@ -56,7 +55,6 @@ const register = async (userLogin, data, log = true) => {
 
 const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateProductValidation, data);
-
     const isProductExist = await prismaClient.products.count({
         where: {
             productId: validationResult.productId,
@@ -134,7 +132,6 @@ const update = async (userLogin, data, log = true) => {
 }
 
 const list = async (userLogin, data, log = true) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(listProductValidation, data);
     const params = (validationResult.companyId) ? JSON.stringify({ ...data }) : null;
 
@@ -166,7 +163,6 @@ const list = async (userLogin, data, log = true) => {
 }
 
 const detail = async (userLogin, productId, log = true) => {
-    const checkResult = await checkPermission(userLogin, "backOffice");
     const validationResult = validate(detailProductValidation, { productId, });
     const product = await prismaClient.products.findFirst({
         where: {
