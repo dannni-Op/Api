@@ -180,3 +180,11 @@ model inbound_details {
   quantity Int
   inbounds inbounds @relation(fields: [inboundId], references: [inboundId], onDelete: Restrict)
 }
+
+model shelf {
+  shelfId String @id
+  shelfCode String
+  maxCapacity Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}

@@ -1,7 +1,7 @@
 import express from "express";
 import { publicRouter } from "../route/public-api.js";
 import { errorMiddleware } from "../middleware/error.middleware.js";
-import { companyRouter, inboundRouter, logRouter, logisticRouter, materialRouter, productRouter, stockRouter, userPermissionRouter, userRouter, warehouseRouter } from "../route/api.js";
+import { shelfRouter, companyRouter, inboundRouter, logRouter, logisticRouter, materialRouter, productRouter, stockRouter, userPermissionRouter, userRouter, warehouseRouter } from "../route/api.js";
 import cors from "cors";
 
 export const app = express();
@@ -18,4 +18,5 @@ app.use(userPermissionRouter);
 app.use(materialRouter);
 app.use(logRouter);
 app.use(inboundRouter);
+app.use(shelfRouter);
 app.use(errorMiddleware);

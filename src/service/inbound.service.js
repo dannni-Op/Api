@@ -325,7 +325,30 @@ const deleteInbound = async (userLogin, data) => {
     })
 
     if(!inbound) throw new responseError(404, "Inbound tidak ditemukan!")
-    const result = await prismaClient.inbounds.delete({
+
+    //delete inbound_trx_logs
+    await prismaClient.inbound_trx_logs.delete({
+        where: {
+            inboundId: validationResult.inboundId,
+        }
+    })
+
+    //delete inbound detail
+    await prismaClient.inbound_details.delete({
+        where: {
+            inboundId: validationResult.inboundId,
+        }
+    })
+
+    //delete inbound dates
+    await prismaClient.inbound_dates.delete({
+        where: {
+            inboundId: validationResult.inboundId,
+        }
+    })
+
+    //delete inbound
+    await prismaClient.inbounds.delete({
       where: {
         inboundId: validationResult.inboundId,
       },

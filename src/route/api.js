@@ -10,6 +10,7 @@ import { deleteStock as stockDelete, register as stockRegister, list as stockLis
 import { register as materialRegister, list as materialList, detail as materialDetail, deleteMaterial as materialDelete, update as materialUpdate } from "../controller/material.controller.js";
 import { list as logList, detail as logDetail, } from "../controller/log.controller.js";
 import { deleteInbound as inboundDelete, update as inboundUpdate, create as inboundCreate, list as inboundList, detail as inboundDetail } from "../controller/inbound.controller.js";
+import { update as shelfUpdate, shelfDelete, detail as shelfDetail, list as shelfList, register as shelfRegister } from "../controller/shelf.controller.js";
 
 const userRouter = new express.Router();
 const companyRouter = new express.Router();
@@ -21,6 +22,7 @@ const userPermissionRouter = new express.Router();
 const materialRouter = new express.Router();
 const logRouter = new express.Router();
 const inboundRouter = new express.Router();
+const shelfRouter = new express.Router();
 
 userRouter.use(authMiddleware);
 companyRouter.use(authMiddleware);
@@ -32,6 +34,7 @@ userPermissionRouter.use(authMiddleware);
 materialRouter.use(authMiddleware);
 logRouter.use(authMiddleware);
 inboundRouter.use(authMiddleware);
+shelfRouter.use(authMiddleware);
 
 //user
 userRouter.patch("/api/users", update);
@@ -91,11 +94,20 @@ materialRouter.patch("/api/materials", materialUpdate);
 logRouter.get("/api/logs/:logId", logDetail);
 logRouter.get("/api/logs", logList);
 
+//inbound
 inboundRouter.post("/api/inbounds/create", inboundCreate);
 inboundRouter.get("/api/inbounds", inboundList);
 inboundRouter.get("/api/inbounds/:inboundId", inboundDetail);
+// update dan delete work in proggress
 inboundRouter.patch("/api/inbounds", inboundUpdate);
 inboundRouter.delete("/api/inbounds", inboundDelete);
+
+//shelf
+shelfRouter.post("/api/shelf/register", shelfRegister );
+shelfRouter.get("/api/shelf", shelfList );
+shelfRouter.get("/api/shelf/:shelfId", shelfDetail );
+shelfRouter.patch("/api/shelf", shelfUpdate );
+shelfRouter.delete("/api/shelf", shelfDelete );
 
 export {
     userRouter,
@@ -108,4 +120,5 @@ export {
     materialRouter,
     logRouter,
     inboundRouter,
+    shelfRouter,
 }
