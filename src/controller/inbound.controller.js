@@ -21,12 +21,13 @@ const list = async (req, res, next) => {
 const detail = async (req, res, next) => {
     try {
        const result = await inboundService.detail(req.user, req.params.inboundId);
-       console.log(result);
        res.status(200).json(result);
     } catch (error) {
        next(error); 
     }
 }
+
+//update dan delete masih work in proggress
 
 const update = async (req, res, next) => {
     try {

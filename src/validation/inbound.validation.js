@@ -2,9 +2,9 @@ import Joi from "joi";
 
 const inboundValidation = Joi.object({
     warehouseId: Joi.string().max(191).required(),
-    sku: Joi.string().max(191).required(),
+    transactionDate: Joi.string().max(191).required(),
+    details: Joi.array().required(),
     description: Joi.string().max(191).optional(),
-    quantity: Joi.number().positive().required(),
 });
 
 const inboundIdValidation = Joi.object({

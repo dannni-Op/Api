@@ -18,7 +18,7 @@ const register = async (userLogin, data, log = true) => {
 
     if(!user) throw new responseError(404, "User tidak ditemukan!");
 
-    const isUserExist = await prismaClient.userPermissions.count({
+    const isUserExist = await prismaClient.user_permissions.count({
         where: {
             userId: validationResult.userId,
         }
@@ -26,7 +26,7 @@ const register = async (userLogin, data, log = true) => {
 
     if(isUserExist === 1) throw new responseError(403, "User permission sudah ada!");
 
-    const result = await prismaClient.userPermissions.create({
+    const result = await prismaClient.user_permissions.create({
         data: {
             permissionId: getId(),
             userId: validationResult.userId,
@@ -48,7 +48,7 @@ const register = async (userLogin, data, log = true) => {
 const detail = async (userLogin, userId, log = true) => {
     const validationResult = validate(idUserValidation, { userId, });
 
-    const isUserPermissionExist = await prismaClient.userPermissions.findFirst({
+    const isUserPermissionExist = await prismaClient.user_permissions.findFirst({
         where: {
             userId: validationResult.userId,
         }
@@ -64,7 +64,7 @@ const detail = async (userLogin, userId, log = true) => {
 }
 
 const list = async (userLogin, log = true) => {
-    const result = await prismaClient.userPermissions.findMany();
+    const result = await prismaClient.user_permissions.findMany();
     if(result.length < 1) throw new responseError(404, "User Permissions kosong!");
     if(log){
         const log = await createLog("read", "/api/user-permissions", null, 200, userLogin.userId);
@@ -75,7 +75,7 @@ const list = async (userLogin, log = true) => {
 const update = async (userLogin, data, log = true) => {
     const validationResult = validate(updateUserPermissionValidation, data);
 
-    const userPermission = await prismaClient.userPermissions.findFirst({
+    const userPermission = await prismaClient.user_permissions.findFirst({
         where: {
             userId: validationResult.userId,
         }
@@ -87,7 +87,7 @@ const update = async (userLogin, data, log = true) => {
     if(validationResult.permissionType) newData.permissionType = validationResult.permissionType === "null" ? null : validationResult.permissionType;
     newData.updatedAt = getUTCTime();
 
-    const result = await prismaClient.userPermissions.update({
+    const result = await prismaClient.user_permissions.update({
         where: {
             permissionId: userPermission.permissionId,
         },

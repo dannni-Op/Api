@@ -18,49 +18,175 @@ const create = async (userLogin, data) => {
 
     const isWarehouseExist = await warehouseService.detail(userLogin, validationResult.warehouseId, false);
 
-    const isProductExist = await prismaClient.products.findFirst({
-        where: {
-            sku: validationResult.sku,
-        },
-    });
-
     const company = await companyService.detail(userLogin, user.companyId, false);
-
-    if (!isProductExist) throw new responseError(404, "Product tidak ditemukan!");
-    if (isProductExist.companyId !== user.companyId) throw new responseError(403, `Product tidak ada di company ${(await company).companyName}`);
-
-    if(validationResult.quantity <= 0) throw new responseError(403, `Quantity harus lebih dari ${validationResult.quantity}!`);
 
     const T = new Date().toISOString().slice(11,16).replace(":", "");
     const D = new Date().toISOString().slice(0, 10).replaceAll("-","");
     
-    const date = getUTCTime();
-    date.setDate(date.getDate() + 10)
 
-    //rumus inbound code : skuProduct + waktu + tanggal
+
+    if(validationResult.details.length < 1) throw new responseError(403, "Details harus diisi!");
+    let totalProduct = validationResult.details.length;
+    let totalQuantity = 0;
+    for(let i =0; i < validationResult.details.length; i++){
+        const product = await prismaClient.products.findFirst({
+            where: {
+                sku: validationResult.details[i].sku,
+            }
+        })
+
+        if(!product) throw new  Error(`Product dengan sku : ${validationResult.details[i].sku} tidak ditemukan!`)
+        if (product.companyId !== user.companyId) throw new responseError(403, `Product dengan sku : ${validationResult.details[i].sku} tidak ditemukan di company ${company.companyName}`);
+        totalQuantity += validationResult.details[i].quantity;
+    }
+
+
+    //rumus inbound code : companyCode + waktu + tanggal
     const inbound = await prismaClient.inbounds.create({
         data: {
            inboundId: getId(),
            companyId: user.companyId, 
            warehouseId: validationResult.warehouseId,
-           transactionDate: getUTCTime(),
-           dueDate: date,
-           approvedDate: null,
-           inboundCode: validationResult.sku+"-"+T+"-"+D,
+           inboundCode: company.companyCode+"-"+T+"-"+D,
            description: validationResult.description ?? null,
-           status: validationResult.status ?? "pending",
-           sku: validationResult.sku,
-           quantity: validationResult.quantity,
+           totalQuantity,
+           totalProduct,
+           createdAt: getUTCTime(),
+           updatedAt: getUTCTime(),
         }
     });
 
-    return inbound;
+    //time
+    const currentTime = new Date();
+    const transactionDate = new Date(validationResult.transactionDate);
+    transactionDate.setHours(currentTime.getHours());
+    transactionDate.setMinutes(currentTime.getMinutes());
+    transactionDate.setSeconds(currentTime.getSeconds());
+    transactionDate.setMilliseconds(currentTime.getMilliseconds());
+    const temp = new Date(transactionDate).setDate(transactionDate.getDate() + 10);
+    const dueDate = new Date(temp);
+
+    const inboundDate = await prismaClient.inbound_dates.create({
+        data: {
+            inboundDateId: getId(),
+            inboundId: inbound.inboundId,
+            transactionDate,
+            dueDate,
+            approvedDate: null,
+        }
+    })
+
+    //status
+    if(!validationResult.status) validationResult.status = "pending";
+    const inboundStatus = await prismaClient.inbound_trx_logs.create({
+        data: {
+            inboundTrxLogId: getId(),
+            inboundId: inbound.inboundId,
+            send: validationResult.status === "send" ? validationResult.status : null,
+            pending: validationResult.status === "pending" ? validationResult.status : null,
+            received: validationResult.status === "received" ? validationResult.status : null,
+            allocated: validationResult.status === "allocated" ? validationResult.status : null,
+            done: validationResult.status === "done" ? validationResult.status : null,
+            cancelled: validationResult.status === "cancelled" ? validationResult.status : null,
+        }
+    })
+
+
+    //detail
+    for(let i =0; i < validationResult.details.length; i++){
+        const product = await prismaClient.products.findFirst({
+            where: {
+                sku: validationResult.details[i].sku,
+            }
+        })
+        const inboundDetail = await prismaClient.inbound_details.create({
+            data: {
+                inboundDetailId: getId(),
+                inboundId: inbound.inboundId,
+                productId: product.productId,
+                quantity: validationResult.details[i].quantity,
+            }
+        })
+    };
+
+    return {
+        inboundId: inbound.inboundId,
+        companyId: inbound.companyId,
+        warehouseId: inbound.warehouseId,
+        transactionDate: inboundDate.transactionDate,
+        dueDate: inboundDate.dueDate,
+        approvedDate: inboundDate.approvedDate,
+        inboundCode: inbound.inboundCode,
+        description: inbound.description,
+        status: validationResult.status,
+        details: validationResult.details,
+    };
 }
 
 const list = async (userLogin) => {
-    const result = await prismaClient.inbounds.findMany();
+    const result = await prismaClient.inbounds.findMany({
+        select: {
+            inboundId: true,
+            companyId: true,
+            warehouseId: true,
+            inbound_dates: {
+                select: {
+                    transactionDate: true,
+                    dueDate: true,
+                    approvedDate: true,
+                }
+            },
+            inboundCode: true,
+            description: true,
+            inbound_trx_logs: true,
+            inbound_details: {
+                select: {
+                    productId: true,
+                    quantity: true,
+                }
+            } 
+        }
+    });
     if(result.length < 1) throw new responseError(404, "List inbounds kosong!");
-    return result;
+    const data = [];
+    for(let i = 0; i < result.length; i++) {
+
+        const status = (result[i].inbound_trx_logs[0].allocated) ? "allocated" : (result[i].inbound_trx_logs[0].cancelled) ? "cancelled" : (result[i].inbound_trx_logs[0].done) ? "done" : (result[i].inbound_trx_logs[0].pending) ? "pending" : (result[i].inbound_trx_logs[0].received) ? "received" : "send";
+
+        const products = [];
+        for(let y = 0; y < result[i].inbound_details.length; y++){
+            const product = await prismaClient.products.findFirst({
+                where: {
+                    productId: result[i].inbound_details[y].productId,
+                }
+            })
+
+            products.push({
+                sku: product.sku,
+                quantity: result[i].inbound_details[y].quantity,
+            })
+
+        }
+
+        const end = {
+            inboundId: result[i].inboundId,
+            companyId: result[i].companyId,
+            warehouseId: result[i].warehouseId,
+            transactionDate: result[i].inbound_dates[0].transactionDate,
+            dueDate: result[i].inbound_dates[0].dueDate,
+            approvedDate: result[i].inbound_dates[0].approvedDate,
+            inboundCode: result[i].inboundCode,
+            description: result[i].description,
+            status,
+            detail: products,
+        }
+
+        data.push(end);
+
+    }
+
+
+    return data;
 }
 
 const detail = async (userLogin, inboundId ) => {
@@ -69,13 +195,68 @@ const detail = async (userLogin, inboundId ) => {
     const inbound = await prismaClient.inbounds.findFirst({
         where: {
             inboundId,
+        },
+        select: {
+            inboundId: true,
+            companyId: true,
+            warehouseId: true,
+            inbound_dates: {
+                select: {
+                    transactionDate: true,
+                    dueDate: true,
+                    approvedDate: true,
+                }
+            },
+            inboundCode: true,
+            description: true,
+            inbound_trx_logs: true,
+            inbound_details: {
+                select: {
+                    productId: true,
+                    quantity: true,
+                }
+            } 
         }
     })
 
     if(!inbound) throw new responseError(404, "Inbound tidak ditemukan!");
 
-    return inbound;
+    let result;
+    const status = (inbound.inbound_trx_logs[0].allocated) ? "allocated" : (inbound.inbound_trx_logs[0].cancelled) ? "cancelled" : (inbound.inbound_trx_logs[0].done) ? "done" : (inbound.inbound_trx_logs[0].pending) ? "pending" : (inbound.inbound_trx_logs[0].received) ? "received" : "send";
+
+    const products = [];
+    for(let y = 0; y < inbound.inbound_details.length; y++){
+        const product = await prismaClient.products.findFirst({
+            where: {
+                productId: inbound.inbound_details[y].productId,
+            }
+        })
+
+        products.push({
+            sku: product.sku,
+            quantity: inbound.inbound_details[y].quantity,
+        })
+
+    }
+
+    result = {
+        inboundId: inbound.inboundId,
+        companyId: inbound.companyId,
+        warehouseId: inbound.warehouseId,
+        transactionDate: inbound.inbound_dates[0].transactionDate,
+        dueDate: inbound.inbound_dates[0].dueDate,
+        approvedDate: inbound.inbound_dates[0].approvedDate,
+        inboundCode: inbound.inboundCode,
+        description: inbound.description,
+        status,
+        detail: products,
+    }
+
+
+    return result;
 }
+
+//update dan delete masih work in proggress
 
 const update = async (userLogin, data) => {
     const validationResult = validate(updateInboundValidation, data);

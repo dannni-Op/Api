@@ -34,7 +34,7 @@ model users {
   companyId String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now())
-  userPermissions userPermissions[]
+  user_permissions user_permissions[]
 }
 
 enum UserType {
@@ -46,7 +46,7 @@ enum UserType {
   Customer_Service 
 }
 
-model userPermissions {
+model user_permissions {
   permissionId String @id
   userId String @unique
   permissionType permissionType?
@@ -139,22 +139,44 @@ model inbounds {
   inboundId String @id 
   companyId String
   warehouseId String
-  transactionDate DateTime @default(now()) 
-  dueDate DateTime @default(now()) 
-  approvedDate DateTime?
   inboundCode String
   description String? @db.Text
-  status statusInbound
-  sku String
-  quantity Int
+  totalQuantity Int
+  totalProduct Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
   warehouses warehouses @relation(fields: [warehouseId], references: [warehouseId], onDelete: Restrict)
   companies companies @relation(fields: [companyId], references: [companyId], onDelete: Restrict)
+  inbound_dates inbound_dates[]
+  inbound_trx_logs inbound_trx_logs[]
+  inbound_details inbound_details[]
 }
 
-enum statusInbound {
-  pending
-  send
-  received
-  done
-  cancelled
+model inbound_dates {
+  inboundDateId String @id
+  inboundId String  
+  transactionDate DateTime?
+  dueDate DateTime? 
+  approvedDate DateTime?
+  inbounds inbounds @relation(fields: [inboundId], references: [inboundId], onDelete: Restrict)
+}
+
+model inbound_trx_logs {
+  inboundTrxLogId String @id 
+  inboundId String  
+  pending String?
+  send String?
+  received String?
+  allocated String?
+  done String?
+  cancelled String?
+  inbounds inbounds @relation(fields: [inboundId], references: [inboundId], onDelete: Restrict)
+}
+
+model inbound_details {
+  inboundDetailId String @id 
+  inboundId String
+  productId String
+  quantity Int
+  inbounds inbounds @relation(fields: [inboundId], references: [inboundId], onDelete: Restrict)
 }
